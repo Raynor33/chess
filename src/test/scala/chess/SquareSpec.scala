@@ -15,6 +15,12 @@ class SquareSpec extends WordSpec with Matchers {
     "not be allowed x < 0" in {
       an [IllegalArgumentException] should be thrownBy Square(-1, 0)
     }
+    "be allowed 7, 7" in {
+      Square(7, 7)
+    }
+    "be allowed 0, 0" in {
+      Square(0, 0)
+    }
     "not be allowed y < 0" in {
       an [IllegalArgumentException] should be thrownBy Square(0, -1)
     }
@@ -31,7 +37,7 @@ class SquareSpec extends WordSpec with Matchers {
       Square(3, 3).flatLineTo(Square(3, 5), 2) should be (Some(Set(Square(3, 4))))
     }
     "give a flat line to a square that's right and in range" in {
-      Square(3, 3).flatLineTo(Square(6, 3), 4) should be (Some(Set(Square(4, 3)), Set(Square(5, 3))))
+      Square(3, 3).flatLineTo(Square(6, 3), 4) should be (Some(Set(Square(4, 3), Square(5, 3))))
     }
     "give a flat line to a square that's down and in range" in {
       Square(3, 3).flatLineTo(Square(3, 2), 2) should be (Some(Set.empty[Square]))
