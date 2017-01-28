@@ -54,5 +54,14 @@ class BoardSpec extends WordSpec with Matchers {
     "say that it's white's move" in {
       InitialBoard.toMove should be (White)
     }
+    "not be in checkmate" in {
+      InitialBoard.checkmate should be (false)
+    }
+    "not be in check for white" in {
+      InitialBoard.check(White) should be (false)
+    }
+    "not be in check for black" in {
+      InitialBoard.check(White) should be (false)
+    }
   }
 }
