@@ -28,6 +28,18 @@ class PieceSpec extends WordSpec with Matchers {
     "not allow a move if neither flat nor diagonal is possible" in {
 
     }
+    "allow a castle move two spaces right" in {
+
+    }
+    "allow a castle move two spaces left" in {
+
+    }
+    "not allow an en passant move" in {
+
+    }
+    "not allow a pawn promotion move" in {
+
+    }
   }
 
   "A Queen" should {
@@ -40,6 +52,15 @@ class PieceSpec extends WordSpec with Matchers {
     "not allow a move if neither flat nor diagonal is possible" in {
 
     }
+    "not allow an en passant move" in {
+
+    }
+    "not allow a pawn promotion move" in {
+
+    }
+    "not allow a castle move" in {
+
+    }
   }
 
   "A Bishop" should {
@@ -47,6 +68,15 @@ class PieceSpec extends WordSpec with Matchers {
 
     }
     "not allow a move a diagonal is not possible" in {
+
+    }
+    "not allow an en passant move" in {
+
+    }
+    "not allow a pawn promotion move" in {
+
+    }
+    "not allow a castle move" in {
 
     }
   }
@@ -85,13 +115,31 @@ class PieceSpec extends WordSpec with Matchers {
     "not allow a move two flat" in {
 
     }
+    "not allow an en passant move" in {
+
+    }
+    "not allow a pawn promotion move" in {
+
+    }
+    "not allow a castle move" in {
+
+    }
   }
 
   "A Rook" should {
     "allow a flat move of eight" in {
 
     }
-    "not allow a move a flat is not possible" in {
+    "not allow a move if a flat move is not possible" in {
+
+    }
+    "not allow an en passant move" in {
+
+    }
+    "not allow a pawn promotion move" in {
+
+    }
+    "not allow a castle move" in {
 
     }
   }
@@ -130,6 +178,21 @@ class PieceSpec extends WordSpec with Matchers {
     "not allow a move of one diagonally right and down" in {
 
     }
+    "allow an en passant move if taking" in {
+
+    }
+    "not allow an en passant move if not taking" in {
+
+    }
+    "allow a pawn promotion move if not taking into row 7" in {
+
+    }
+    "allow a pawn promotion move if taking into row 7" in {
+
+    }
+    "not allow a castle move" in {
+
+    }
   }
 
   "A black pawn" should {
@@ -164,6 +227,21 @@ class PieceSpec extends WordSpec with Matchers {
 
     }
     "not allow a move of one diagonally right and up" in {
+
+    }
+    "allow an en passant move if taking" in {
+
+    }
+    "not allow an en passant move if not taking" in {
+
+    }
+    "allow a pawn promotion move if not taking into row 0" in {
+
+    }
+    "allow a pawn promotion move if taking into row 0" in {
+
+    }
+    "not allow a castle move" in {
 
     }
   }
