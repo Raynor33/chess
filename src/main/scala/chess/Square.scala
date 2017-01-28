@@ -1,7 +1,11 @@
 package chess
 
+object Square {
+  val boardWidth = 8
+}
+
 case class Square(x: Int, y: Int) {
-  if (x > 7 || y > 7 || x < 0 || y < 0) throw new IllegalArgumentException
+  if (x >= Square.boardWidth || y >= Square.boardWidth || x < 0 || y < 0) throw new IllegalArgumentException
 
   def flatLineTo(square: Square, maxSquares: Int): Option[Set[Square]] = {
     lineTo(square, maxSquares, (xDiff, yDiff) => xDiff == 0 ^ yDiff == 0)
