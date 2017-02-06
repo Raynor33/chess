@@ -5,7 +5,7 @@ trait Coloured {
 }
 
 sealed trait Piece extends Coloured {
-  def pathFor(move: Move): Option[Set[Square]]
+  def pathFor(from: Square, to: Square): Option[Set[Square]]
 }
 
 case object WhiteKing extends Piece with WhiteColoured with King
@@ -31,26 +31,26 @@ trait BlackColoured extends Coloured {
 }
 
 trait King {
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
 
 sealed trait Queen {
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
 
 sealed trait Bishop {
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
 
 sealed trait Knight {
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
 
 sealed trait Rook {
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
 
 sealed trait Pawn {
   this: Coloured =>
-  def pathFor(move: Move): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }

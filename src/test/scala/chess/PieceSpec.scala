@@ -1,8 +1,9 @@
 package chess
 
+import org.scalamock.scalatest.MockFactory
 import org.scalatest._
 
-class PieceSpec extends WordSpec with Matchers {
+class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockFactory {
 
   "A WhitePiece" should {
     "be white" in {
@@ -18,15 +19,18 @@ class PieceSpec extends WordSpec with Matchers {
     }
   }
 
-  "A King" should {
-    "allow a flat move of one" in {
+  class MockSquare extends Square(0,0)
 
+  val fromMock = mock[MockSquare]
+  val toSquare = Square(1,2)
+
+  "A King" should {
+    val king = new King {}
+    "allow a flat move of one" in {
     }
     "allow a diagonal move of one" in {
-
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-
     }
     "allow a castle move two spaces right" in {
 
