@@ -27,123 +27,105 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A King" should {
     val king = new King {}
     "allow a flat move of one" in {
+      (fromMock.diagonalLineTo _) expects (toSquare, 1) anyNumberOfTimes() returns (None)
+      (fromMock.flatLineTo _) expects (toSquare, 1) returns (Some(Set.empty[Square]))
+      king.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of one" in {
+      (fromMock.flatLineTo _) expects (toSquare, 1) anyNumberOfTimes() returns (None)
+      (fromMock.diagonalLineTo _) expects (toSquare, 1) returns (Some(Set.empty[Square]))
+      king.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-    }
-    "allow a castle move two spaces right" in {
-
-    }
-    "allow a castle move two spaces left" in {
-
-    }
-    "not allow an en passant move" in {
-
-    }
-    "not allow a pawn promotion move" in {
-
+      (fromMock.flatLineTo _) expects (toSquare, 1) returns (None)
+      (fromMock.diagonalLineTo _) expects (toSquare, 1) returns (None)
+      king.pathFor(fromMock, toSquare) should be(None)
     }
   }
 
   "A Queen" should {
+    val queen = new Queen {}
     "allow a flat move of eight" in {
-
+      (fromMock.diagonalLineTo _) expects (toSquare, 8) anyNumberOfTimes() returns (None)
+      (fromMock.flatLineTo _) expects (toSquare, 8) returns (Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of eight" in {
-
+      (fromMock.flatLineTo _) expects (toSquare, 8) anyNumberOfTimes() returns (None)
+      (fromMock.diagonalLineTo _) expects (toSquare, 8) returns (Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-
-    }
-    "not allow an en passant move" in {
-
-    }
-    "not allow a pawn promotion move" in {
-
-    }
-    "not allow a castle move" in {
-
+      (fromMock.flatLineTo _) expects (toSquare, 8) returns (None)
+      (fromMock.diagonalLineTo _) expects (toSquare, 8) returns (None)
+      queen.pathFor(fromMock, toSquare) should be(None)
     }
   }
 
   "A Bishop" should {
+    val bishop = new Bishop {}
     "allow a diagonal move of eight" in {
-
+      (fromMock.diagonalLineTo _) expects (toSquare, 8) returns (Some(Set.empty[Square]))
+      bishop.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
-    "not allow a move a diagonal is not possible" in {
-
-    }
-    "not allow an en passant move" in {
-
-    }
-    "not allow a pawn promotion move" in {
-
-    }
-    "not allow a castle move" in {
-
+    "not allow a move if a diagonal is not possible" in {
+      (fromMock.diagonalLineTo _) expects (toSquare, 8) returns (None)
+      (fromMock.flatLineTo _) expects (*, *) never()
+      bishop.pathFor(fromMock, toSquare) should be(None)
     }
   }
 
   "A Knight" should {
+    val knight = new Knight {}
+    val from = Square(3, 3)
     "allow a move two right and one up" in {
-
+      knight.pathFor(from, Square(from.x + 2, from.y + 1)) should be (Some(Set.empty[Square]))
     }
     "allow a move two right and one down" in {
+      knight.pathFor(from, Square(from.x + 2, from.y - 1)) should be (Some(Set.empty[Square]))
 
     }
     "allow a move two left and one up" in {
+      knight.pathFor(from, Square(from.x - 2, from.y + 1)) should be (Some(Set.empty[Square]))
 
     }
     "allow a move two left and one down" in {
-
+      knight.pathFor(from, Square(from.x - 2, from.y - 1)) should be (Some(Set.empty[Square]))
     }
     "allow a move two up and one left" in {
+      knight.pathFor(from, Square(from.x - 1, from.y + 2)) should be (Some(Set.empty[Square]))
 
     }
     "allow a move two up and one right" in {
-
+      knight.pathFor(from, Square(from.x + 1, from.y + 2)) should be (Some(Set.empty[Square]))
     }
     "allow a move two down and one left" in {
-
+      knight.pathFor(from, Square(from.x - 1, from.y - 2)) should be (Some(Set.empty[Square]))
     }
     "allow a move two down and one right" in {
-
+      knight.pathFor(from, Square(from.x + 1, from.y - 2)) should be (Some(Set.empty[Square]))
     }
     "not allow a move one diagonally" in {
-
+      knight.pathFor(from, Square(from.x + 1, from.y + 1)) should be (None)
     }
     "not allow a move two diagonally" in {
-
+      knight.pathFor(from, Square(from.x + 2, from.y + 2)) should be (None)
     }
     "not allow a move two flat" in {
-
-    }
-    "not allow an en passant move" in {
-
-    }
-    "not allow a pawn promotion move" in {
-
-    }
-    "not allow a castle move" in {
-
+      knight.pathFor(from, Square(from.x, from.y + 2)) should be (None)
     }
   }
 
   "A Rook" should {
+    val rook = new Rook {}
     "allow a flat move of eight" in {
-
+      (fromMock.flatLineTo _) expects (toSquare, 8) returns (Some(Set.empty[Square]))
+      rook.pathFor(fromMock, toSquare) should be(Some(Set.empty[Square]))
     }
     "not allow a move if a flat move is not possible" in {
-
-    }
-    "not allow an en passant move" in {
-
-    }
-    "not allow a pawn promotion move" in {
-
-    }
-    "not allow a castle move" in {
+      (fromMock.flatLineTo _) expects (toSquare, 8) returns (None)
+      (fromMock.diagonalLineTo _) expects (*,*) never()
+      rook.pathFor(fromMock, toSquare) should be(None)
 
     }
   }
@@ -182,21 +164,6 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     "not allow a move of one diagonally right and down" in {
 
     }
-    "allow an en passant move if taking" in {
-
-    }
-    "not allow an en passant move if not taking" in {
-
-    }
-    "allow a pawn promotion move if not taking into row 7" in {
-
-    }
-    "allow a pawn promotion move if taking into row 7" in {
-
-    }
-    "not allow a castle move" in {
-
-    }
   }
 
   "A black pawn" should {
@@ -231,21 +198,6 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
 
     }
     "not allow a move of one diagonally right and up" in {
-
-    }
-    "allow an en passant move if taking" in {
-
-    }
-    "not allow an en passant move if not taking" in {
-
-    }
-    "allow a pawn promotion move if not taking into row 0" in {
-
-    }
-    "allow a pawn promotion move if taking into row 0" in {
-
-    }
-    "not allow a castle move" in {
 
     }
   }

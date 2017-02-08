@@ -31,26 +31,32 @@ trait BlackColoured extends Coloured {
 }
 
 trait King {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 1)
+    .orElse(from.diagonalLineTo(to, 1))
 }
 
-sealed trait Queen {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+trait Queen {
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 8)
+    .orElse(from.diagonalLineTo(to, 8))
 }
 
-sealed trait Bishop {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+trait Bishop {
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.diagonalLineTo(to, 8)
 }
 
-sealed trait Knight {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+trait Knight {
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = {
+    val xDiff = Math.abs(to.x - from.x)
+    val yDiff = Math.abs(to.y - from.y)
+    if (xDiff.max(yDiff) == 2 && xDiff.min(yDiff) == 1) Some(Set.empty[Square]) else None
+  }
 }
 
-sealed trait Rook {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+trait Rook {
+  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 8)
 }
 
-sealed trait Pawn {
+trait Pawn {
   this: Coloured =>
   def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
 }
