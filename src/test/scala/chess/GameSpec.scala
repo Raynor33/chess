@@ -29,28 +29,6 @@ class GameSpec extends WordSpec with Matchers {
         pieceMap(Square(x, 6)) should be(BlackPawn)
       })
     }
-    "return the correct piece when pieceAt is called" in {
-      Nil.pieceAt(Square(0,0)) should be (WhiteRook)
-      Nil.pieceAt(Square(1,0)) should be (WhiteKnight)
-      Nil.pieceAt(Square(2,0)) should be (WhiteBishop)
-      Nil.pieceAt(Square(3,0)) should be (WhiteQueen)
-      Nil.pieceAt(Square(4,0)) should be (WhiteKing)
-      Nil.pieceAt(Square(5,0)) should be (WhiteBishop)
-      Nil.pieceAt(Square(6,0)) should be (WhiteKnight)
-      Nil.pieceAt(Square(7,0)) should be (WhiteRook)
-      Nil.pieceAt(Square(0,7)) should be (BlackRook)
-      Nil.pieceAt(Square(1,7)) should be (BlackKnight)
-      Nil.pieceAt(Square(2,7)) should be (BlackBishop)
-      Nil.pieceAt(Square(3,7)) should be (BlackQueen)
-      Nil.pieceAt(Square(4,7)) should be (BlackKing)
-      Nil.pieceAt(Square(5,7)) should be (BlackBishop)
-      Nil.pieceAt(Square(6,7)) should be (BlackKnight)
-      Nil.pieceAt(Square(7,7)) should be (BlackRook)
-      (0 to 7).foreach(x => {
-        Nil.pieceAt(Square(x, 1)) should be(WhitePawn)
-        Nil.pieceAt(Square(x, 6)) should be(BlackPawn)
-      })
-    }
     "say that it's white's move" in {
       Nil.toMove should be (White)
     }

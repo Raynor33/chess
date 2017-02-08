@@ -1,7 +1,6 @@
 package chess
 
 sealed trait Game {
-  def pieceAt(square: Square): Piece
   def currentPositions(predicate: (Piece) => Boolean): Map[Square, Piece]
   def toMove: Colour
   def checkmate: Boolean
@@ -17,32 +16,24 @@ trait NonNilGame {
 }
 
 case class StandardMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
-  override def pieceAt(square: Square) = ???
-
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
 case class CastlingMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
-  override def pieceAt(square: Square) = ???
-
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
 case class EnPassantMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
-  override def pieceAt(square: Square) = ???
-
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
-case class PawnPromotionMove(from: Square, to: Square, piece: Piece, game: Game) extends Game with NonNilGame {
-  override def pieceAt(square: Square) = ???
-
+case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, game: Game) extends Game with NonNilGame {
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
@@ -60,15 +51,9 @@ case object Nil extends Game {
     (Square(2,7) -> BlackBishop) + (Square(5,7) -> BlackBishop) +
     (Square(3,7) -> BlackQueen) + (Square(4,7) -> BlackKing)
 
-  override def pieceAt(square: Square) = pieces(square)
-
   override def currentPositions(predicate: (Piece) => Boolean) = pieces.filter(t => predicate(t._2))
-
   override def toMove = White
-
   override def checkmate = false
-
   override def check(colour: Colour) = false
-
   override def valid = true
 }
