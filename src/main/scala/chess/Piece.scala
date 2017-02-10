@@ -5,7 +5,7 @@ trait Coloured {
 }
 
 sealed trait Piece extends Coloured {
-  def pathFor(from: Square, to: Square): Option[Set[Square]]
+  def pathFor(from: Square, to: Square, takingPiece: Boolean): Option[Set[Square]]
 }
 
 case object WhiteKing extends Piece with WhiteColoured with King
@@ -31,21 +31,21 @@ trait BlackColoured extends Coloured {
 }
 
 trait King {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 1)
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = from.flatLineTo(to, 1)
     .orElse(from.diagonalLineTo(to, 1))
 }
 
 trait Queen {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 8)
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = from.flatLineTo(to, 8)
     .orElse(from.diagonalLineTo(to, 8))
 }
 
 trait Bishop {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.diagonalLineTo(to, 8)
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = from.diagonalLineTo(to, 8)
 }
 
 trait Knight {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = {
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = {
     val xDiff = Math.abs(to.x - from.x)
     val yDiff = Math.abs(to.y - from.y)
     if (xDiff.max(yDiff) == 2 && xDiff.min(yDiff) == 1) Some(Set.empty[Square]) else None
@@ -53,10 +53,14 @@ trait Knight {
 }
 
 trait Rook {
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = from.flatLineTo(to, 8)
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = from.flatLineTo(to, 8)
 }
 
 trait Pawn {
   this: Coloured =>
-  def pathFor(from: Square, to: Square): Option[Set[Square]] = ???
+  def pathFor(from: Square, to: Square, takingPiece: Boolean) = {
+    if (Integer.signum(to.y - from.y) != colour.moveDirection) None
+    else if (takingPiece) from.diagonalLineTo(to, 1)
+    else from.flatLineTo(to, if (from.y == colour.pawnRow) 2 else 1)
+  }
 }
