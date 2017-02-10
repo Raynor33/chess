@@ -4,7 +4,7 @@ trait Coloured {
   def colour: Colour
 }
 
-sealed trait Piece extends Coloured {
+trait Piece extends Coloured {
   def pathFor(from: Square, to: Square, takingPiece: Boolean): Option[Set[Square]]
 }
 

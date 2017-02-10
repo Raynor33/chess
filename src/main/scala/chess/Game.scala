@@ -1,6 +1,16 @@
 package chess
 
-sealed trait Game {
+import Game._
+
+object Game {
+  val MatchAll = (p: Piece) => true
+  val MatchWhite = (p: Piece) => p.colour == White
+  val MatchBlack = (p: Piece) => p.colour == Black
+  val MatchWhiteKing = (p: Piece) => p == WhiteKing
+  val MatchBlackKing = (p: Piece) => p == BlackKing
+}
+
+trait Game {
   def currentPositions(predicate: (Piece) => Boolean): Map[Square, Piece]
   def toMove: Colour
   def checkmate: Boolean
@@ -8,32 +18,43 @@ sealed trait Game {
   def valid: Boolean
 }
 
-trait NonNilGame {
-  def game: Game
-  def toMove = ???
-  def check(colour: Colour): Boolean = ???
+trait NonNilGame extends Game {
+  def toMove = previous.toMove.opposite
+  def check(colour: Colour) = {
+    val allPositions = currentPositions(MatchAll)
+    val kingPredicate = if (colour == Black) MatchBlackKing else MatchWhiteKing
+    val kingSquare = allPositions.find(t => kingPredicate(t._2))
+      .map(_._1).getOrElse(throw new IllegalStateException)
+    allPositions.filter(_._2.colour == colour.opposite)
+      .exists(t =>
+        t._2.pathFor(t._1, kingSquare, true).map(path =>
+          path.intersect(allPositions.keys.toSet).isEmpty
+        ).getOrElse(false)
+      )
+  }
   def checkmate: Boolean = ???
+  def previous: Game
 }
 
-case class StandardMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
+case class StandardMove(from: Square, to: Square, previous: Game) extends NonNilGame {
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
-case class CastlingMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
+case class CastlingMove(from: Square, to: Square, previous: Game) extends NonNilGame {
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
-case class EnPassantMove(from: Square, to: Square, game: Game) extends Game with NonNilGame {
+case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNilGame {
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
 }
 
-case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, game: Game) extends Game with NonNilGame {
+case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Game) extends NonNilGame {
   override def currentPositions(predicate: (Piece) => Boolean) = ???
 
   override def valid = ???
