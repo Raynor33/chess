@@ -34,7 +34,7 @@ class SquareSpec extends WordSpec with Matchers {
       Square(1, 2).flatLineTo(Square(1, 4), 1) should be (None)
     }
     "give a flat line to a square that's up and in range" in {
-      Square(3, 3).flatLineTo(Square(3, 5), 2) should be (Some(Set(Square(3, 4))))
+      Square(3, 4).flatLineTo(Square(3, 6), 2) should be (Some(Set(Square(3, 5))))
     }
     "give a flat line to a square that's right and in range" in {
       Square(3, 3).flatLineTo(Square(6, 3), 4) should be (Some(Set(Square(4, 3), Square(5, 3))))

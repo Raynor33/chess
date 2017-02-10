@@ -23,7 +23,7 @@ case class Square(x: Int, y: Int) {
         val signum: Int = Integer.signum(finish - start)
         List.range(start + signum, finish, signum)
       }
-      Some(intsBetween(x, square.x).zipAll(intsBetween(y, square.y), y, x).map((t) => Square(t._1, t._2)).toSet)
+      Some(intsBetween(x, square.x).zipAll(intsBetween(y, square.y), x, y).map((t) => Square(t._1, t._2)).toSet)
     }
   }
 }
