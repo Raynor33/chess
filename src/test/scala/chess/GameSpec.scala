@@ -1,10 +1,14 @@
 package chess
 
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
 import Game._
-import org.scalamock.scalatest.MockFactory
 import org.scalatest._
+import org.scalatest.mockito.MockitoSugar
 
-class GameSpec extends WordSpec with Matchers with OneInstancePerTest with MockFactory {
+class GameSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 
   "The Nil Game" should {
     "have the correct positions for everything" in {
@@ -59,58 +63,80 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with MockF
     }
 
     "have a toMove of White if previous game's toMove is Black" in {
-      (previousMock.toMove _) expects () returns (Black)
+      when(previousMock.toMove) thenReturn (Black)
       nonNilGame.toMove should be(White)
     }
     "have a toMove of Black if previous game's toMove is White" in {
-      (previousMock.toMove _) expects () returns (White)
+      when (previousMock.toMove) thenReturn (White)
       nonNilGame.toMove should be(Black)
     }
 
-    val square1 = Square(3,4);
-    val square2 = Square(4,5);
-    val square3 = Square(5,6);
-    val attackingPiece = mock[Piece]
+    val whiteKingSquare = Square(3,4)
+    val whiteOtherSquare = Square(4,5)
+    val blackOtherSquare = Square(6,7)
+    val blackKingSquare = Square(5,6)
+    val whiteKing = mock[Piece]
+    when(whiteKing.colour).thenReturn (White)
+    when(whiteKing.isKing) thenReturn (true)
+    val whiteOther = mock[Piece]
+    when(whiteOther.colour) thenReturn (White)
+    when(whiteOther.isKing) thenReturn (false)
+    val blackKing = mock[Piece]
+    when(blackKing.colour) thenReturn (Black)
+    when(blackKing.isKing) thenReturn (true)
+    val blackOther = mock[Piece]
+    when(blackOther.colour) thenReturn (Black)
+    when(blackOther.isKing) thenReturn (false)
+    val allPositions = Map(
+      whiteKingSquare -> whiteKing,
+      whiteOtherSquare -> whiteOther,
+      blackOtherSquare -> blackOther,
+      blackKingSquare -> blackKing
+    )
+    when(currentMock.currentPositions(any())).thenAnswer(new Answer[Map[Square, Piece]] {
+      override def answer(invocation: InvocationOnMock): Map[Square, Piece] = {
+        val predicate = invocation.getArgument[Function1[Piece, Boolean]](0)
+        allPositions.filter(e => predicate(e._2))
+      }
+    })
     "say black is in check if a white piece is attacking it" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> BlackKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (White)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (Some(Set.empty[Square]))
+      when(whiteKing.pathFor(whiteKingSquare, blackKingSquare, true)) thenReturn (None)
+      when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)) thenReturn (Some(Set.empty[Square]))
       nonNilGame.check(Black) should be (true)
     }
     "say black is not in check if no white piece is attacking it" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> BlackKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (White)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (None)
+      when(whiteKing.pathFor(whiteKingSquare, blackKingSquare, true)) thenReturn (None)
+      when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)) thenReturn (None)
       nonNilGame.check(Black) should be (false)
     }
-    "say black is not in check if all white pieces attacking it are blocked" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> BlackKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (White)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (Some(Set(square3)))
+    "say black is not in check if all white pieces attacking it are blocked by black" in {
+      when(whiteKing.pathFor(whiteKingSquare, blackKingSquare, true)) thenReturn (None)
+      when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)) thenReturn (Some(Set(blackOtherSquare)))
+      nonNilGame.check(Black) should be (false)
+    }
+    "say black is not in check if all white pieces attacking it are blocked by white" in {
+      when(whiteKing.pathFor(whiteKingSquare, blackKingSquare, true)) thenReturn (None)
+      when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)) thenReturn (Some(Set(whiteOtherSquare)))
       nonNilGame.check(Black) should be (false)
     }
     "say white is in check if a black piece is attacking it" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> WhiteKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (Black)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (Some(Set.empty[Square]))
+      when(blackKing.pathFor(blackKingSquare, whiteKingSquare, true)) thenReturn (None)
+      when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)) thenReturn (Some(Set.empty[Square]))
       nonNilGame.check(White) should be (true)
     }
     "say white is not in check if no black piece is attacking it" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> WhiteKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (Black)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (None)
+      when(blackKing.pathFor(blackKingSquare, whiteKingSquare, true)) thenReturn (None)
+      when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)) thenReturn (None)
       nonNilGame.check(White) should be (false)
     }
-    "say white is not in check if all black pieces attacking it are blocked" in {
-      (currentMock.currentPositions _) expects (MatchAll) returns (
-        Map(square1 -> attackingPiece, square2 -> WhiteKing, square3 -> WhitePawn))
-      (attackingPiece.colour _) expects() anyNumberOfTimes() returns (Black)
-      (attackingPiece.pathFor _) expects(square1, square2, true) returns (Some(Set(square3)))
+    "say white is not in check if all black pieces attacking it are blocked by white" in {
+      when(blackKing.pathFor(blackKingSquare, whiteKingSquare, true)) thenReturn (None)
+      when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)) thenReturn (Some(Set(whiteOtherSquare)))
+      nonNilGame.check(White) should be (false)
+    }
+    "say white is not in check if all black pieces attacking it are blocked by black" in {
+      when(blackKing.pathFor(blackKingSquare, whiteKingSquare, true)) thenReturn (None)
+      when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)) thenReturn (Some(Set(blackOtherSquare)))
       nonNilGame.check(White) should be (false)
     }
   }

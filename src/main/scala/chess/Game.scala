@@ -6,8 +6,8 @@ object Game {
   val MatchAll = (p: Piece) => true
   val MatchWhite = (p: Piece) => p.colour == White
   val MatchBlack = (p: Piece) => p.colour == Black
-  val MatchWhiteKing = (p: Piece) => p == WhiteKing
-  val MatchBlackKing = (p: Piece) => p == BlackKing
+  val MatchWhiteKing = (p: Piece) => MatchWhite(p) && p.isKing
+  val MatchBlackKing = (p: Piece) => MatchBlack(p) && p.isKing
 }
 
 trait Game {

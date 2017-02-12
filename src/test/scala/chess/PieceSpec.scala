@@ -25,7 +25,7 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   val toSquare = Square(1,2)
 
   "A King" should {
-    val king = new King {}
+    val king = WhiteKing
     "allow a flat move of one" in {
       (fromMock.diagonalLineTo _) expects (toSquare, 1) anyNumberOfTimes() returns (None)
       (fromMock.flatLineTo _) expects (toSquare, 1) twice() returns (Some(Set.empty[Square]))
@@ -44,10 +44,13 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       king.pathFor(fromMock, toSquare, false) should be(None)
       king.pathFor(fromMock, toSquare, true) should be(None)
     }
+    "be king" in {
+      king.isKing should be(true)
+    }
   }
 
   "A Queen" should {
-    val queen = new Queen {}
+    val queen = WhiteQueen
     "allow a flat move of eight" in {
       (fromMock.diagonalLineTo _) expects (toSquare, 8) anyNumberOfTimes() returns (None)
       (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
@@ -66,10 +69,13 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       queen.pathFor(fromMock, toSquare, false) should be(None)
       queen.pathFor(fromMock, toSquare, true) should be(None)
     }
+    "not be king" in {
+      queen.isKing should be(false)
+    }
   }
 
   "A Bishop" should {
-    val bishop = new Bishop {}
+    val bishop = WhiteBishop
     "allow a diagonal move of eight" in {
       (fromMock.diagonalLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
       bishop.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
@@ -81,10 +87,13 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       bishop.pathFor(fromMock, toSquare, false) should be(None)
       bishop.pathFor(fromMock, toSquare, true) should be(None)
     }
+    "not be king" in {
+      bishop.isKing should be(false)
+    }
   }
 
   "A Knight" should {
-    val knight = new Knight {}
+    val knight = WhiteKnight
     val from = Square(3, 3)
     "allow a move two right and one up" in {
       knight.pathFor(from, Square(from.x + 2, from.y + 1), false) should be (Some(Set.empty[Square]))
@@ -133,10 +142,13 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       knight.pathFor(from, Square(from.x, from.y + 2), false) should be (None)
       knight.pathFor(from, Square(from.x, from.y + 2), true) should be (None)
     }
+    "not be king" in {
+      knight.isKing should be(false)
+    }
   }
 
   "A Rook" should {
-    val rook = new Rook {}
+    val rook = WhiteRook
     "allow a flat move of eight" in {
       (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
       rook.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
@@ -147,7 +159,9 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       (fromMock.diagonalLineTo _) expects (*,*) never()
       rook.pathFor(fromMock, toSquare, false) should be(None)
       rook.pathFor(fromMock, toSquare, true) should be(None)
-
+    }
+    "not be king" in {
+      rook.isKing should be(false)
     }
   }
 
@@ -186,6 +200,9 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     "not allow a move of one diagonally right and down" in {
       WhitePawn.pathFor(Square(1, 1), Square(2, 0), true) should be (None)
     }
+    "not be king" in {
+      WhitePawn.isKing should be(false)
+    }
   }
 
   "A black pawn" should {
@@ -221,6 +238,9 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     }
     "not allow a move of one diagonally right and up" in {
       BlackPawn.pathFor(Square(1, 6), Square(2, 7), true) should be (None)
+    }
+    "not be king" in {
+      BlackPawn.isKing should be(false)
     }
   }
 }
