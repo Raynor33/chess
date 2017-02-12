@@ -2,6 +2,7 @@ package chess
 
 object Square {
   val boardWidth = 8
+  val allSquares = for (x <- (0 to 7); y <- (0 to 7)) yield Square(x, y)
 }
 
 case class Square(x: Int, y: Int) {
