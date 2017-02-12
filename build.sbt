@@ -9,7 +9,6 @@ lazy val root = (project in file(".")).
     )),
     name := "chess",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.4.2" % Test,
     libraryDependencies += "org.mockito" % "mockito-core" % "2.7.5" % Test
 
 

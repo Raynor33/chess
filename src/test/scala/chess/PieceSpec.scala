@@ -1,9 +1,10 @@
 package chess
 
-import org.scalamock.scalatest.MockFactory
+import org.mockito.Mockito._
 import org.scalatest._
+import org.scalatest.mockito.MockitoSugar
 
-class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockFactory {
+class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 
   "A WhitePiece" should {
     "be white" in {
@@ -27,20 +28,20 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A King" should {
     val king = WhiteKing
     "allow a flat move of one" in {
-      (fromMock.diagonalLineTo _) expects (toSquare, 1) anyNumberOfTimes() returns (None)
-      (fromMock.flatLineTo _) expects (toSquare, 1) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (None)
+      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (Some(Set.empty[Square]))
       king.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       king.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of one" in {
-      (fromMock.flatLineTo _) expects (toSquare, 1) anyNumberOfTimes() returns (None)
-      (fromMock.diagonalLineTo _) expects (toSquare, 1) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (Some(Set.empty[Square]))
       king.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       king.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-      (fromMock.flatLineTo _) expects (toSquare, 1) twice() returns (None)
-      (fromMock.diagonalLineTo _) expects (toSquare, 1) twice() returns (None)
+      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (None)
       king.pathFor(fromMock, toSquare, false) should be(None)
       king.pathFor(fromMock, toSquare, true) should be(None)
     }
@@ -52,20 +53,20 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Queen" should {
     val queen = WhiteQueen
     "allow a flat move of eight" in {
-      (fromMock.diagonalLineTo _) expects (toSquare, 8) anyNumberOfTimes() returns (None)
-      (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
+      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
       queen.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       queen.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of eight" in {
-      (fromMock.flatLineTo _) expects (toSquare, 8) anyNumberOfTimes() returns (None)
-      (fromMock.diagonalLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
       queen.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       queen.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-      (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (None)
-      (fromMock.diagonalLineTo _) expects (toSquare, 8) twice() returns (None)
+      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
       queen.pathFor(fromMock, toSquare, false) should be(None)
       queen.pathFor(fromMock, toSquare, true) should be(None)
     }
@@ -77,13 +78,12 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Bishop" should {
     val bishop = WhiteBishop
     "allow a diagonal move of eight" in {
-      (fromMock.diagonalLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
       bishop.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       bishop.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if a diagonal is not possible" in {
-      (fromMock.diagonalLineTo _) expects (toSquare, 8) twice() returns (None)
-      (fromMock.flatLineTo _) expects (*, *) never()
+      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
       bishop.pathFor(fromMock, toSquare, false) should be(None)
       bishop.pathFor(fromMock, toSquare, true) should be(None)
     }
@@ -150,13 +150,12 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Rook" should {
     val rook = WhiteRook
     "allow a flat move of eight" in {
-      (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
       rook.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
       rook.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if a flat move is not possible" in {
-      (fromMock.flatLineTo _) expects (toSquare, 8) twice() returns (None)
-      (fromMock.diagonalLineTo _) expects (*,*) never()
+      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
       rook.pathFor(fromMock, toSquare, false) should be(None)
       rook.pathFor(fromMock, toSquare, true) should be(None)
     }
