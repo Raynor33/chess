@@ -14,6 +14,8 @@ trait NonNilGame extends Game {
 
   def from: Square
 
+  def to: Square
+
   def moveLegal: Boolean
 
   def valid = moveLegal && !check(previous.toMove)
@@ -39,10 +41,7 @@ trait NonNilGame extends Game {
   def checkmate = check(toMove) && {
     val allPositions = currentPositions
     !allPositions.filter(_._2.colour == toMove).keys.exists(f =>
-      Square.allSquares.exists(t =>
-        StandardMove(f, t, this).valid
-          || EnPassantMove(f, t, this).valid
-      )
+      Square.allSquares.exists(t => StandardMove(f, t, this).valid || EnPassantMove(f, t, this).valid)
     )
   }
 }
@@ -98,9 +97,31 @@ case class CastlingMove(from: Square, to: Square, previous: Game) extends NonNil
 }
 
 case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNilGame {
-  override def currentPositions = ???
+  override def currentPositions = {
+    val previousPositions = previous.currentPositions
+    (previousPositions
+      + (to -> previousPositions(from))
+      - from
+      - Square(to.x, from.y))
+  }
 
-  override def moveLegal = ???
+  override def moveLegal = {
+    val previousPositions = previous.currentPositions
+    previous match {
+      case move: NonNilGame =>
+        previousPositions.get(Square(to.x, from.y)).exists(_ match {
+          case pawn: Pawn =>
+            move.from.y == pawn.colour.pawnRow &&
+            Math.abs(move.to.y - move.from.y) == 2
+          case _ => false
+        }) &&
+        previousPositions.get(from).exists(_ match {
+          case pawn: Pawn => pawn.colour == previous.toMove
+          case _ => false
+        })
+      case _ => false
+    }
+  }
 }
 
 case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Game) extends NonNilGame {

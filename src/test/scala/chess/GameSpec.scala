@@ -60,6 +60,7 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     val nonNilGame = new NonNilGame {
       val previous = previousMock
       val from = mock[Square]
+      val to = mock[Square]
       def currentPositions = currentMock.currentPositions
       def moveLegal = currentMock.moveLegal
     }
@@ -384,6 +385,95 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     }
     "be valid when everything's ok" in {
       CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (true)
+    }
+  }
+
+  "An En Passant move" should {
+    val previousMock = mock[NonNilGame]
+    val blackPawn = mock[Piece with Pawn]
+    when(blackPawn.colour).thenReturn(Black)
+    val whitePawn = mock[Piece with Pawn]
+    when(whitePawn.colour).thenReturn(White)
+    "update the positions correctly for a white capture" in {
+      val positions = Map(
+        Square(4,4) -> blackPawn,
+        Square(5,4) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(5,4), Square(4,3), previousMock).currentPositions should be (
+        Map(
+          Square(4,3) -> whitePawn
+        )
+      )
+    }
+    "update the positions correctly for a black capture" in {
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).currentPositions should be (
+        Map(
+          Square(5,2) -> blackPawn
+        )
+      )
+    }
+
+    val notPawn = mock[Piece]
+    when(previousMock.from).thenReturn(Square(5,1))
+    when(previousMock.to).thenReturn(Square(5,3))
+    when(previousMock.toMove).thenReturn(Black)
+    "not be legal if it isn't that player's turn" in {
+      when(previousMock.toMove).thenReturn(White)
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+    }
+    "not be legal if it isn't a pawn" in {
+      when(notPawn.colour).thenReturn(Black)
+      val positions = Map(
+        Square(4,3) -> notPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+    }
+    "not be legal if the target isn't a pawn" in {
+      when(notPawn.colour).thenReturn(White)
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> notPawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+    }
+    "not be legal if the target isn't an opponent pawn" in {
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> blackPawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+    }
+    "not be legal if the target piece hasn't just moved two from the first rank" in {
+      when(previousMock.from).thenReturn(Square(5,2))
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+    }
+    "be legal otherwise" in {
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (true)
     }
   }
 }
