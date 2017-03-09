@@ -125,9 +125,16 @@ case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNi
 }
 
 case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Game) extends NonNilGame {
-  override def currentPositions = ???
+  override def currentPositions = previous.currentPositions - from + (to -> promotion)
 
-  override def moveLegal = ???
+  override def moveLegal = previous.currentPositions.get(from).exists(_ match {
+    case p: Pawn => StandardMove(from, to, previous).moveLegal
+    case _ => false
+  }) && (promotion match {
+    case p: Pawn => false
+    case k: King => false
+    case _ => promotion.colour == previous.toMove
+  })
 }
 
 case object Nil extends Game {

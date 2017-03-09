@@ -476,4 +476,91 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
       EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (true)
     }
   }
+
+  "A Pawn Promotion move" should {
+    val previousMock = mock[Game]
+    val whitePawn = mock[Piece with Pawn]
+    when(whitePawn.colour).thenReturn(White)
+    val whiteOther = mock[Piece]
+    when(whiteOther.colour).thenReturn(White)
+    val blackPawn = mock[Piece with Pawn]
+    when(blackPawn.colour).thenReturn(Black)
+    val blackOther = mock[Piece with Pawn]
+    when(blackOther.colour).thenReturn(Black)
+    val positions = Map(
+      Square(3,6) -> whitePawn,
+      Square(4,7) -> blackOther,
+      Square(3,1) -> blackPawn,
+      Square(4,0) -> whiteOther
+    )
+    when(previousMock.currentPositions).thenReturn(positions)
+    "update the positions correctly when white moving into space" in {
+      val move = PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock)
+      move.currentPositions should be (
+        positions - Square(3,6) + (Square(3,7) -> WhiteQueen)
+      )
+    }
+    "update the positions correctly when black moving into space" in {
+      val move = PawnPromotionMove(Square(3,1), Square(3,0), BlackQueen, previousMock)
+      move.currentPositions should be (
+        positions - Square(3,1) + (Square(3,0) -> BlackQueen)
+      )
+    }
+    "update the positions correctly when white taking" in {
+      val move = PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock)
+      move.currentPositions should be (
+        positions - Square(3,6) + (Square(4,7) -> WhiteQueen)
+      )
+    }
+    "update the positions correctly when black taking" in {
+      val move = PawnPromotionMove(Square(3,1), Square(4,0), BlackQueen, previousMock)
+      move.currentPositions should be (
+        positions - Square(3,1) + (Square(4,0) -> BlackQueen)
+      )
+    }
+
+    when(whitePawn.pathFor(any(), any(), any())).thenReturn(None)
+    when(whitePawn.pathFor(Square(3,6), Square(3,7), false)).thenReturn(Some(Set.empty[Square]))
+    when(whitePawn.pathFor(Square(3,6), Square(4,7), true)).thenReturn(Some(Set.empty[Square]))
+    when(blackPawn.pathFor(any(), any(), any())).thenReturn(None)
+    when(blackPawn.pathFor(Square(3,1), Square(3,0), false)).thenReturn(Some(Set.empty[Square]))
+    when(blackPawn.pathFor(Square(3,1), Square(4,0), true)).thenReturn(Some(Set.empty[Square]))
+    when(previousMock.toMove).thenReturn(White)
+    "not allow promotion to a pawn" in {
+      PawnPromotionMove(Square(3,6), Square(3,7), WhitePawn, previousMock).moveLegal should be (false)
+    }
+    "not allow promotion to a king" in {
+      PawnPromotionMove(Square(3,6), Square(3,7), WhiteKing, previousMock).moveLegal should be (false)
+    }
+    "not allow promotion to a piece of the wrong colour" in {
+      PawnPromotionMove(Square(3,6), Square(3,7), BlackQueen, previousMock).moveLegal should be (false)
+    }
+    "not be legal for non-pawns" in {
+      when(whiteOther.pathFor(Square(3,6), Square(3,7), false)).thenReturn(Some(Set.empty[Square]))
+      when(previousMock.currentPositions).thenReturn(Map(
+        Square(3,6) -> whiteOther
+      ))
+      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
+    }
+    "not be legal if there is no piece at the from square" in {
+      PawnPromotionMove(Square(2,6), Square(2,7), WhiteQueen, previousMock).moveLegal should be (false)
+    }
+    "not be legal if the piece at from square is not toMove colour" in {
+      when(previousMock.toMove).thenReturn(Black)
+      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
+    }
+    "not be legal if the destination is blocked by a piece of the same colour" in {
+      when(previousMock.currentPositions).thenReturn(positions + (Square(4,7) -> whiteOther))
+      PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (false)
+    }
+    "not be legal if there is no path" in {
+      PawnPromotionMove(Square(3,6), Square(5,7), WhiteQueen, previousMock).moveLegal should be (false)
+    }
+    "be legal if there is a clear path and the destination is empty" in {
+      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (true)
+    }
+    "be legal if there is a clear path and the destination has an opponent" in {
+      PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (true)
+    }
+  }
 }
