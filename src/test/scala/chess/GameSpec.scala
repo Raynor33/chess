@@ -80,7 +80,6 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
       nonNilGame.hasNeverMoved(square) should be (true)
     }
 
-
     "have a toMove of White if previous game's toMove is Black" in {
       when(previousMock.toMove) thenReturn (Black)
       nonNilGame.toMove should be(White)
@@ -172,6 +171,33 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     "be checkmate if no escape is possible" in {
       when(previousMock.toMove) thenReturn (Black)
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
+    }
+
+
+    "should not be valid if the previous isn't" in {
+      when(previousMock.valid).thenReturn(false)
+      when(currentMock.moveLegal).thenReturn(true)
+      when(previousMock.toMove) thenReturn(White)
+      nonNilGame.valid should be (false)
+    }
+    "should not be valid if the move isn't legal" in {
+      when(previousMock.valid).thenReturn(true)
+      when(currentMock.moveLegal).thenReturn(false)
+      when(previousMock.toMove) thenReturn(White)
+      nonNilGame.valid should be (false)
+    }
+    "should not be valid if the player ends in check" in {
+      when(previousMock.valid).thenReturn(true)
+      when(currentMock.moveLegal).thenReturn(true)
+      when(previousMock.toMove) thenReturn(White)
+      when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)).thenReturn(Some(Set.empty[Square]))
+      nonNilGame.valid should be (false)
+    }
+    "should be valid otherwise" in {
+      when(previousMock.valid).thenReturn(true)
+      when(currentMock.moveLegal).thenReturn(true)
+      when(previousMock.toMove) thenReturn(White)
+      nonNilGame.valid should be (true)
     }
   }
 

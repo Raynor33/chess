@@ -18,7 +18,7 @@ trait NonNilGame extends Game {
 
   def moveLegal: Boolean
 
-  def valid = moveLegal && !check(previous.toMove)
+  def valid = moveLegal && !check(previous.toMove) && previous.valid
 
   def hasNeverMoved(square: Square) =
     previous.hasNeverMoved(square) && square != from
