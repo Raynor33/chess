@@ -1,7 +1,6 @@
 package chess
 
 trait GameStore {
-  def startGame: String
   def getGame(id: String): Option[Game]
-  def saveGame(id: String, game: Game)
+  def saveGame(id: Option[String], game: Game): String
 }
