@@ -1,4 +1,4 @@
-package chess
+package chess.core
 
 trait Coloured {
   def colour: Colour

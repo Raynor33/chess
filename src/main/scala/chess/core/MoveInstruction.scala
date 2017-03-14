@@ -1,4 +1,4 @@
-package chess
+package chess.core
 
 sealed trait MoveInstruction {
   def applyTo(game: Game) : Game

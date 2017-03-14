@@ -1,4 +1,4 @@
-package chess
+package chess.core
 
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._

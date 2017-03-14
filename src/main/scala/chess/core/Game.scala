@@ -1,4 +1,4 @@
-package chess
+package chess.core
 
 trait Game {
   def currentPositions: Map[Square, Piece]

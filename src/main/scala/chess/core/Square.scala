@@ -1,4 +1,4 @@
-package chess
+package chess.core
 
 object Square {
   val boardWidth = 8
