@@ -1,6 +1,6 @@
 package chess.core
 
-trait Game {
+trait Board {
   def currentPositions: Map[Square, Piece]
   def toMove: Colour
   def checkmate: Boolean
@@ -9,8 +9,8 @@ trait Game {
   def valid: Boolean
 }
 
-trait NonNilGame extends Game {
-  def previous: Game
+trait Move extends Board {
+  def previous: Board
 
   def from: Square
 
@@ -46,7 +46,7 @@ trait NonNilGame extends Game {
   }
 }
 
-case class StandardMove(from: Square, to: Square, previous: Game) extends NonNilGame {
+case class StandardMove(from: Square, to: Square, previous: Board) extends Move {
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     // TODO How should this method behave if the move is invalid? Currently fails.
@@ -65,7 +65,7 @@ case class StandardMove(from: Square, to: Square, previous: Game) extends NonNil
   }
 }
 
-case class CastlingMove(from: Square, to: Square, previous: Game) extends NonNilGame {
+case class CastlingMove(from: Square, to: Square, previous: Board) extends Move {
   private val castleFrom = if (to.x > from.x) Square(7, from.y) else Square(0, from.y)
   private val castleTo = if (to.x > from.x) Square(5, from.y) else Square(3, from.y)
 
@@ -96,7 +96,7 @@ case class CastlingMove(from: Square, to: Square, previous: Game) extends NonNil
 
 }
 
-case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNilGame {
+case class EnPassantMove(from: Square, to: Square, previous: Board) extends Move {
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     (previousPositions
@@ -108,7 +108,7 @@ case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNi
   override def moveLegal = {
     val previousPositions = previous.currentPositions
     previous match {
-      case move: NonNilGame =>
+      case move: Move =>
         previousPositions.get(Square(to.x, from.y)).exists(_ match {
           case pawn: Pawn =>
             move.from.y == pawn.colour.pawnRow &&
@@ -124,7 +124,7 @@ case class EnPassantMove(from: Square, to: Square, previous: Game) extends NonNi
   }
 }
 
-case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Game) extends NonNilGame {
+case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Board) extends Move {
   override def currentPositions = previous.currentPositions - from + (to -> promotion)
 
   override def moveLegal = previous.currentPositions.get(from).exists(_ match {
@@ -137,7 +137,7 @@ case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previou
   })
 }
 
-case object Nil extends Game {
+case object Nil extends Board {
   private val pieces = (0 to 7).map(x => Square(x, 1) -> WhitePawn).toMap ++
     (0 to 7).map(x => Square(x, 6) -> BlackPawn).toMap +
     (Square(0,0) -> WhiteRook) + (Square(7,0) -> WhiteRook) +

@@ -5,9 +5,9 @@ import org.mockito.ArgumentMatchers._
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
 
-class GameSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
+class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 
-  "The Nil Game" should {
+  "The Nil Board" should {
     "have the correct positions for everything" in {
       val pieceMap = Nil.currentPositions
       pieceMap.size should be (32)
@@ -54,10 +54,10 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     }
   }
 
-  "A NonNilGame" should {
-    val previousMock = mock[Game]
-    val currentMock = mock[NonNilGame]
-    val nonNilGame = new NonNilGame {
+  "A Move" should {
+    val previousMock = mock[Board]
+    val currentMock = mock[Move]
+    val move = new Move {
       val previous = previousMock
       val from = mock[Square]
       val to = mock[Square]
@@ -68,25 +68,25 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val square = Square(0,0)
       when(previousMock.hasNeverMoved(square)).thenReturn(false)
-      nonNilGame.hasNeverMoved(square) should be (false)
+      move.hasNeverMoved(square) should be (false)
     }
     "say hasNeverMoved is false if it equals from" in {
-      when(previousMock.hasNeverMoved(nonNilGame.from)).thenReturn(true)
-      nonNilGame.hasNeverMoved(nonNilGame.from) should be (false)
+      when(previousMock.hasNeverMoved(move.from)).thenReturn(true)
+      move.hasNeverMoved(move.from) should be (false)
     }
     "say hasNeverMoved is true if it doesn't equal from and previous value is true" in {
       val square = Square(0,0)
       when(previousMock.hasNeverMoved(square)).thenReturn(true)
-      nonNilGame.hasNeverMoved(square) should be (true)
+      move.hasNeverMoved(square) should be (true)
     }
 
     "have a toMove of White if previous game's toMove is Black" in {
       when(previousMock.toMove) thenReturn (Black)
-      nonNilGame.toMove should be(White)
+      move.toMove should be(White)
     }
     "have a toMove of Black if previous game's toMove is White" in {
       when (previousMock.toMove) thenReturn (White)
-      nonNilGame.toMove should be(Black)
+      move.toMove should be(Black)
     }
 
     val whiteKingSquare = Square(3,4)
@@ -119,39 +119,39 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
     )
     when(currentMock.currentPositions).thenReturn(allPositions)
     "say black is not in check if no white piece is attacking it" in {
-      nonNilGame.check(Black) should be (false)
+      move.check(Black) should be (false)
     }
     "say black is in check if a white piece is attacking it" in {
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
-      nonNilGame.check(Black) should be (true)
+      move.check(Black) should be (true)
     }
     "say black is not in check if white's attacks are blocked by white" in {
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set(whiteKingSquare)))
-      nonNilGame.check(Black) should be (false)
+      move.check(Black) should be (false)
     }
     "say black is not in check if white's attacks are blocked by black" in {
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set(blackOtherSquare)))
-      nonNilGame.check(Black) should be (false)
+      move.check(Black) should be (false)
     }
     "say white is not in check if no black piece is attacking it" in {
-      nonNilGame.check(White) should be (false)
+      move.check(White) should be (false)
     }
     "say white is in check if a black piece is attacking it" in {
       when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)).thenReturn(Some(Set.empty[Square]))
-      nonNilGame.check(White) should be (true)
+      move.check(White) should be (true)
     }
     "say white is not in check if black's attacks are blocked by white" in {
       when(blackOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set(whiteOtherSquare)))
-      nonNilGame.check(White) should be (false)
+      move.check(White) should be (false)
     }
     "say white is not in check if black's attacks are blocked by black" in {
       when(blackOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set(blackKingSquare)))
-      nonNilGame.check(White) should be (false)
+      move.check(White) should be (false)
     }
 
     "not be checkmate if it's not check" in {
       when(previousMock.toMove) thenReturn (Black)
-      nonNilGame.checkmate should be (false)
+      move.checkmate should be (false)
     }
     "not be checkmate if an evasion escape is possible" in {
       when(previousMock.toMove) thenReturn (Black)
@@ -178,31 +178,31 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
       when(previousMock.valid).thenReturn(false)
       when(currentMock.moveLegal).thenReturn(true)
       when(previousMock.toMove) thenReturn(White)
-      nonNilGame.valid should be (false)
+      move.valid should be (false)
     }
     "should not be valid if the move isn't legal" in {
       when(previousMock.valid).thenReturn(true)
       when(currentMock.moveLegal).thenReturn(false)
       when(previousMock.toMove) thenReturn(White)
-      nonNilGame.valid should be (false)
+      move.valid should be (false)
     }
     "should not be valid if the player ends in check" in {
       when(previousMock.valid).thenReturn(true)
       when(currentMock.moveLegal).thenReturn(true)
       when(previousMock.toMove) thenReturn(White)
       when(blackOther.pathFor(blackOtherSquare, whiteKingSquare, true)).thenReturn(Some(Set.empty[Square]))
-      nonNilGame.valid should be (false)
+      move.valid should be (false)
     }
     "should be valid otherwise" in {
       when(previousMock.valid).thenReturn(true)
       when(currentMock.moveLegal).thenReturn(true)
       when(previousMock.toMove) thenReturn(White)
-      nonNilGame.valid should be (true)
+      move.valid should be (true)
     }
   }
 
   "A StandardMove" should {
-    val previousMock = mock[Game]
+    val previousMock = mock[Board]
     val whitePiece1 = mock[Piece]
     when(whitePiece1.colour).thenReturn(White)
     when(whitePiece1.pathFor(any(), any(), any())).thenReturn(None)
@@ -294,7 +294,7 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
   }
 
   "A CastlingMove" should {
-    val previousMock = mock[Game]
+    val previousMock = mock[Board]
     val whiteRook1 = mock[Piece]
     when(whiteRook1.colour).thenReturn(White)
     when(whiteRook1.pathFor(any(), any(), any())).thenReturn(None)
@@ -415,7 +415,7 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
   }
 
   "An En Passant move" should {
-    val previousMock = mock[NonNilGame]
+    val previousMock = mock[Move]
     val blackPawn = mock[Piece with Pawn]
     when(blackPawn.colour).thenReturn(Black)
     val whitePawn = mock[Piece with Pawn]
@@ -504,7 +504,7 @@ class GameSpec extends WordSpec with Matchers with OneInstancePerTest with Mocki
   }
 
   "A Pawn Promotion move" should {
-    val previousMock = mock[Game]
+    val previousMock = mock[Board]
     val whitePawn = mock[Piece with Pawn]
     when(whitePawn.colour).thenReturn(White)
     val whiteOther = mock[Piece]

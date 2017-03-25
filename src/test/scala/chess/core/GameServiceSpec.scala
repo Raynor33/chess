@@ -28,8 +28,8 @@ class GameServiceSpec extends WordSpec with Matchers with OneInstancePerTest wit
     "return false if the resulting game isn't valid" in {
       val id = "someid"
       val moveInstruction = mock[MoveInstruction]
-      val game1 = mock[Game]
-      val game2 = mock[Game]
+      val game1 = mock[Board]
+      val game2 = mock[Board]
       when(game2.valid).thenReturn(false)
       when(moveInstruction.applyTo(game1)).thenReturn(game2)
       when(mockGameStore.getGame(id)).thenReturn(Some(game1))
@@ -40,8 +40,8 @@ class GameServiceSpec extends WordSpec with Matchers with OneInstancePerTest wit
     "return true if the resulting game is valid and save the result" in {
       val id = "someid"
       val moveInstruction = mock[MoveInstruction]
-      val game1 = mock[Game]
-      val game2 = mock[Game]
+      val game1 = mock[Board]
+      val game2 = mock[Board]
       when(game2.valid).thenReturn(true)
       when(moveInstruction.applyTo(game1)).thenReturn(game2)
       when(mockGameStore.getGame(id)).thenReturn(Some(game1))
