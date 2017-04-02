@@ -1,3 +1,3 @@
 package chess.core
 
-case class Game(whitePlayerId: Option[String], blackPlayerId: Option[String], board: Board)
+case class Game(whitePlayerId: String, blackPlayerId: String, board: Board = Nil)

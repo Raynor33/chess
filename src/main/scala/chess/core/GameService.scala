@@ -1,12 +1,38 @@
 package chess.core
 
-class GameService(gameStore: GameStore) {
-  def startGame = gameStore.saveGame(None, Nil)
-  def doMove(gameId: String, moveInstruction: MoveInstruction) = gameStore.getGame(gameId).exists(g => {
-    val result = moveInstruction.applyTo(g)
-    if (result.valid) {
-      gameStore.saveGame(Some(gameId), result)
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class GameService {
+  this: GameStore =>
+
+  def startGame(whitePlayerId: String, blackPlayerId: String) = insertGame(Game(whitePlayerId, blackPlayerId, board = Nil))
+
+  def doMove(gameId: String, playerId: String, moveInstruction: MoveInstruction): Future[GameServiceResponse] = {
+    getGame(gameId).flatMap {
+      case None => Future.successful(NotFound)
+      case Some(game) => {
+        val expectedPlayer = if (game.board.toMove == White) game.whitePlayerId else game.blackPlayerId
+        if (expectedPlayer != playerId) {
+          Future.successful(IncorrectPlayer)
+        }
+        else {
+          val result = moveInstruction.applyTo(game.board)
+          if (result.valid) {
+            saveGame(gameId, game.copy(board = result))
+          }
+          else {
+            Future.successful(InvalidMove)
+          }
+        }
+      }
     }
-    result.valid
-  })
+  }
 }
+
+sealed trait GameServiceResponse
+
+case object Success extends GameServiceResponse
+case object NotFound extends GameServiceResponse
+case object IncorrectPlayer extends GameServiceResponse
+case object InvalidMove extends GameServiceResponse
