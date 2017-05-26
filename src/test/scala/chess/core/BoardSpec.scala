@@ -9,7 +9,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
 
   "The Nil Board" should {
     "have the correct positions for everything" in {
-      val pieceMap = Nil.currentPositions
+      val pieceMap = NilBoard.currentPositions
       pieceMap.size should be (32)
       pieceMap(Square(0,0)) should be (WhiteRook)
       pieceMap(Square(1,0)) should be (WhiteKnight)
@@ -34,23 +34,23 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     }
     "say hasNeverMoved is true" in {
       Square.allSquares.foreach(
-        Nil.hasNeverMoved(_) should be (true)
+        NilBoard.hasNeverMoved(_) should be (true)
       )
     }
     "say that it's white's move" in {
-      Nil.toMove should be (White)
+      NilBoard.toMove should be (White)
     }
     "not be in checkmate" in {
-      Nil.checkmate should be (false)
+      NilBoard.checkmate should be (false)
     }
     "not be in check for white" in {
-      Nil.check(White) should be (false)
+      NilBoard.check(White) should be (false)
     }
     "not be in check for black" in {
-      Nil.check(White) should be (false)
+      NilBoard.check(White) should be (false)
     }
     "be valid" in {
-      Nil.valid should be (true)
+      NilBoard.valid should be (true)
     }
   }
 

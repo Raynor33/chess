@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class GameService {
   this: GameStore =>
 
-  def startGame(whitePlayerId: String, blackPlayerId: String) = insertGame(Game(whitePlayerId, blackPlayerId, board = Nil))
+  def startGame(whitePlayerId: String, blackPlayerId: String) = insertGame(Game(whitePlayerId, blackPlayerId, board = NilBoard))
 
   def doMove(gameId: String, playerId: String, moveInstruction: MoveInstruction): Future[GameServiceResponse] = {
     getGame(gameId).flatMap {

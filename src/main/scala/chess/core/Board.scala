@@ -137,7 +137,7 @@ case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previou
   })
 }
 
-case object Nil extends Board {
+case object NilBoard extends Board {
   private val pieces = (0 to 7).map(x => Square(x, 1) -> WhitePawn).toMap ++
     (0 to 7).map(x => Square(x, 6) -> BlackPawn).toMap +
     (Square(0,0) -> WhiteRook) + (Square(7,0) -> WhiteRook) +

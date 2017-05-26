@@ -29,7 +29,7 @@ object ChessFormats {
   implicit object BoardReadsWrites extends Format[Board] {
     def moveType[T <: Product](t: T) = Json.obj("moveType" -> JsString(t.productPrefix))
     def writes(board: Board) = board match {
-      case Nil => JsNull
+      case NilBoard => JsNull
       case s: StandardMove => moveType(s) ++ Json.format[StandardMove].writes(s)
       case c: CastlingMove => moveType(c) ++ Json.format[CastlingMove].writes(c)
       case e: EnPassantMove => moveType(e) ++ Json.format[EnPassantMove].writes(e)
@@ -37,7 +37,7 @@ object ChessFormats {
     }
     def reads(json: JsValue) = {
       json match {
-        case JsNull => JsSuccess(Nil)
+        case JsNull => JsSuccess(NilBoard)
         case o: JsObject => (o \ "moveType").toOption match {
             case Some(JsString("StandardMove")) => Json.format[StandardMove].reads(json)
             case Some(JsString("CastlingMove")) => Json.format[CastlingMove].reads(json)

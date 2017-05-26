@@ -23,7 +23,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
             previous = StandardMove(
               from = Square(0,1),
               to = Square(1,1),
-              previous = Nil
+              previous = NilBoard
             )
           )
         )

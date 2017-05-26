@@ -30,7 +30,7 @@ class GameServiceSpec extends WordSpec with Matchers with OneInstancePerTest wit
 
   "A game service" should {
     "save a Nil game to the store and return the id when starting" in new GameService with MockGameStore {
-      val expectedGame = Game(playerId, player2Id, board = Nil)
+      val expectedGame = Game(playerId, player2Id, board = NilBoard)
       when(mockGameStore.insertGame(expectedGame)).thenReturn(Future(gameId))
       whenReady(startGame(playerId, player2Id)) {
         _ shouldBe gameId
