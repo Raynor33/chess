@@ -14,16 +14,16 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         from = Square(1,2),
         to = Square(2,3),
         promotion = WhiteQueen,
-        previous = EnPassantMoveBoard(
+        previousBoard = EnPassantMoveBoard(
           from = Square(3,4),
           to = Square(4,5),
-          previous = CastlingMoveBoard(
+          previousBoard = CastlingMoveBoard(
             from = Square(5,6),
             to = Square(6,7),
-            previous = StandardMoveBoard(
+            previousBoard = StandardMoveBoard(
               from = Square(0,1),
               to = Square(1,1),
-              previous = NilBoard
+              previousBoard = NilBoard
             )
           )
         )
@@ -45,7 +45,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |   "y": 3
         |  },
         |  "promotion": "WhiteQueen",
-        |  "previous": {
+        |  "previousBoard": {
         |   "type": "EnPassantMoveBoard",
         |   "from": {
         |    "x": 3,
@@ -55,7 +55,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |    "x": 4,
         |    "y": 5
         |   },
-        |   "previous": {
+        |   "previousBoard": {
         |    "type": "CastlingMoveBoard",
         |    "from": {
         |     "x": 5,
@@ -65,7 +65,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |     "x": 6,
         |     "y": 7
         |    },
-        |    "previous": {
+        |    "previousBoard": {
         |     "type": "StandardMoveBoard",
         |     "from": {
         |      "x": 0,
@@ -75,7 +75,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |      "x": 1,
         |      "y": 1
         |     },
-        |     "previous": null
+        |     "previousBoard": null
         |    }
         |   }
         |  }

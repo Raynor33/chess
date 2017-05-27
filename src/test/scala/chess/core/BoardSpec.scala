@@ -58,7 +58,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     val previousMock = mock[Board]
     val currentMock = mock[MoveBoard]
     val move = new MoveBoard {
-      val previous = previousMock
+      val previousBoard = previousMock
       val from = mock[Square]
       val to = mock[Square]
       def currentPositions = currentMock.currentPositions

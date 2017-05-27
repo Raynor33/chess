@@ -10,7 +10,7 @@ trait Board {
 }
 
 trait MoveBoard extends Board {
-  def previous: Board
+  def previousBoard: Board
 
   def from: Square
 
@@ -18,12 +18,12 @@ trait MoveBoard extends Board {
 
   def moveLegal: Boolean
 
-  def valid = moveLegal && !check(previous.toMove) && previous.valid
+  def valid = moveLegal && !check(previousBoard.toMove) && previousBoard.valid
 
   def hasNeverMoved(square: Square) =
-    previous.hasNeverMoved(square) && square != from
+    previousBoard.hasNeverMoved(square) && square != from
 
-  def toMove = previous.toMove.opposite
+  def toMove = previousBoard.toMove.opposite
 
   def check(colour: Colour) = {
     val allPositions = currentPositions
@@ -46,9 +46,9 @@ trait MoveBoard extends Board {
   }
 }
 
-case class StandardMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
+case class StandardMoveBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
   override def currentPositions = {
-    val previousPositions = previous.currentPositions
+    val previousPositions = previousBoard.currentPositions
     (previousPositions
       - from
       ++ previousPositions.get(from).map(p =>
@@ -57,23 +57,23 @@ case class StandardMoveBoard(from: Square, to: Square, previous: Board) extends 
   }
 
   override def moveLegal = {
-    val previousPositions = previous.currentPositions
+    val previousPositions = previousBoard.currentPositions
     previousPositions.get(from).exists(piece =>
-      piece.colour == previous.toMove &&
+      piece.colour == previousBoard.toMove &&
       piece.pathFor(from, to, previousPositions.contains(to)).exists(path =>
         previousPositions.keySet.intersect(path).isEmpty) &&
       previousPositions.get(to).forall(taking =>
-        taking.colour != previous.toMove)
+        taking.colour != previousBoard.toMove)
     )
   }
 }
 
-case class CastlingMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
+case class CastlingMoveBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
   private val castleFrom = if (to.x > from.x) Square(7, from.y) else Square(0, from.y)
   private val castleTo = if (to.x > from.x) Square(5, from.y) else Square(3, from.y)
 
   override def currentPositions = {
-    val previousPositions = previous.currentPositions
+    val previousPositions = previousBoard.currentPositions
     (previousPositions
       ++ previousPositions.get(from).map(p =>
         Seq(to -> p)
@@ -85,15 +85,15 @@ case class CastlingMoveBoard(from: Square, to: Square, previous: Board) extends 
 
   override def moveLegal = {
     val moveSignum = Integer.signum(to.x - from.x)
-    val previousPositions = previous.currentPositions
-    previous.hasNeverMoved(from) &&
-      previous.hasNeverMoved(castleFrom) &&
+    val previousPositions = previousBoard.currentPositions
+    previousBoard.hasNeverMoved(from) &&
+      previousBoard.hasNeverMoved(castleFrom) &&
       previousPositions.get(from).exists(p =>
-        p.isKing && p.colour == previous.toMove) &&
+        p.isKing && p.colour == previousBoard.toMove) &&
       Math.abs(to.x - from.x) == 2 &&
       to.y == from.y &&
-      !previous.check(previous.toMove) &&
-      !StandardMoveBoard(from, Square(from.x + moveSignum, from.y), previous).check(previous.toMove) &&
+      !previousBoard.check(previousBoard.toMove) &&
+      !StandardMoveBoard(from, Square(from.x + moveSignum, from.y), previousBoard).check(previousBoard.toMove) &&
       (from.x + moveSignum until castleFrom.x).forall(x =>
         !previousPositions.contains(Square(x, from.y))
       )
@@ -101,9 +101,9 @@ case class CastlingMoveBoard(from: Square, to: Square, previous: Board) extends 
 
 }
 
-case class EnPassantMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
+case class EnPassantMoveBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
   override def currentPositions = {
-    val previousPositions = previous.currentPositions
+    val previousPositions = previousBoard.currentPositions
     (previousPositions
       ++ previousPositions.get(from).map(p =>
         Seq(to -> p)
@@ -113,8 +113,8 @@ case class EnPassantMoveBoard(from: Square, to: Square, previous: Board) extends
   }
 
   override def moveLegal = {
-    val previousPositions = previous.currentPositions
-    previous match {
+    val previousPositions = previousBoard.currentPositions
+    previousBoard match {
       case move: MoveBoard =>
         previousPositions.get(Square(to.x, from.y)).exists(_ match {
           case pawn: Pawn =>
@@ -123,7 +123,7 @@ case class EnPassantMoveBoard(from: Square, to: Square, previous: Board) extends
           case _ => false
         }) &&
         previousPositions.get(from).exists(_ match {
-          case pawn: Pawn => pawn.colour == previous.toMove
+          case pawn: Pawn => pawn.colour == previousBoard.toMove
           case _ => false
         })
       case _ => false
@@ -131,16 +131,16 @@ case class EnPassantMoveBoard(from: Square, to: Square, previous: Board) extends
   }
 }
 
-case class PawnPromotionMoveBoard(from: Square, to: Square, promotion: Piece, previous: Board) extends MoveBoard {
-  override def currentPositions = previous.currentPositions - from + (to -> promotion)
+case class PawnPromotionMoveBoard(from: Square, to: Square, promotion: Piece, previousBoard: Board) extends MoveBoard {
+  override def currentPositions = previousBoard.currentPositions - from + (to -> promotion)
 
-  override def moveLegal = previous.currentPositions.get(from).exists(_ match {
-    case p: Pawn => StandardMoveBoard(from, to, previous).moveLegal
+  override def moveLegal = previousBoard.currentPositions.get(from).exists(_ match {
+    case p: Pawn => StandardMoveBoard(from, to, previousBoard).moveLegal
     case _ => false
   }) && (promotion match {
     case p: Pawn => false
     case k: King => false
-    case _ => promotion.colour == previous.toMove
+    case _ => promotion.colour == previousBoard.toMove
   })
 }
 
