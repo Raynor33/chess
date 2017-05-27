@@ -49,8 +49,11 @@ trait Move extends Board {
 case class StandardMove(from: Square, to: Square, previous: Board) extends Move {
   override def currentPositions = {
     val previousPositions = previous.currentPositions
-    // TODO How should this method behave if the move is invalid? Currently fails.
-    previousPositions + (to -> previousPositions(from)) - from
+    (previousPositions
+      - from
+      ++ previousPositions.get(from).map(p =>
+        Seq(to -> p)
+      ).getOrElse(Nil))
   }
 
   override def moveLegal = {
@@ -72,7 +75,9 @@ case class CastlingMove(from: Square, to: Square, previous: Board) extends Move 
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     (previousPositions
-      + (to -> previousPositions(from))
+      ++ previousPositions.get(from).map(p =>
+        Seq(to -> p)
+      ).getOrElse(Nil)
       - from
       + (castleTo -> previousPositions(castleFrom))
       - castleFrom)
@@ -100,7 +105,9 @@ case class EnPassantMove(from: Square, to: Square, previous: Board) extends Move
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     (previousPositions
-      + (to -> previousPositions(from))
+      ++ previousPositions.get(from).map(p =>
+        Seq(to -> p)
+      ).getOrElse(Nil)
       - from
       - Square(to.x, from.y))
   }
