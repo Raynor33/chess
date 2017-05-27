@@ -12,7 +12,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      StandardMoveInstruction(from, to).applyTo(game) should be (StandardMove(from, to, game))
+      StandardMoveInstruction(from, to).applyTo(game) should be (StandardMoveBoard(from, to, game))
     }
   }
 
@@ -21,7 +21,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      CastlingMoveInstruction(from, to).applyTo(game) should be (CastlingMove(from, to, game))
+      CastlingMoveInstruction(from, to).applyTo(game) should be (CastlingMoveBoard(from, to, game))
     }
   }
 
@@ -30,7 +30,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      EnPassantMoveInstruction(from, to).applyTo(game) should be (EnPassantMove(from, to, game))
+      EnPassantMoveInstruction(from, to).applyTo(game) should be (EnPassantMoveBoard(from, to, game))
     }
   }
 
@@ -40,7 +40,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val from = mock[Square]
       val to = mock[Square]
       val piece = mock[Piece]
-      PawnPromotionMoveInstruction(from, to, piece).applyTo(game) should be (PawnPromotionMove(from, to, piece, game))
+      PawnPromotionMoveInstruction(from, to, piece).applyTo(game) should be (PawnPromotionMoveBoard(from, to, piece, game))
     }
   }
 }

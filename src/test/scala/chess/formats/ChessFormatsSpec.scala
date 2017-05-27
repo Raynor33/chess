@@ -10,17 +10,17 @@ class ChessFormatsSpec extends WordSpec with Matchers {
     val testGame = Game(
       whitePlayerId = "asdf",
       blackPlayerId = "qwer",
-      board = PawnPromotionMove(
+      board = PawnPromotionMoveBoard(
         from = Square(1,2),
         to = Square(2,3),
         promotion = WhiteQueen,
-        previous = EnPassantMove(
+        previous = EnPassantMoveBoard(
           from = Square(3,4),
           to = Square(4,5),
-          previous = CastlingMove(
+          previous = CastlingMoveBoard(
             from = Square(5,6),
             to = Square(6,7),
-            previous = StandardMove(
+            previous = StandardMoveBoard(
               from = Square(0,1),
               to = Square(1,1),
               previous = NilBoard
@@ -35,7 +35,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         | "whitePlayerId": "asdf",
         | "blackPlayerId": "qwer",
         | "board": {
-        |  "moveType": "PawnPromotionMove",
+        |  "type": "PawnPromotionMoveBoard",
         |  "from": {
         |   "x": 1,
         |   "y": 2
@@ -46,7 +46,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |  },
         |  "promotion": "WhiteQueen",
         |  "previous": {
-        |   "moveType": "EnPassantMove",
+        |   "type": "EnPassantMoveBoard",
         |   "from": {
         |    "x": 3,
         |    "y": 4
@@ -56,7 +56,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |    "y": 5
         |   },
         |   "previous": {
-        |    "moveType": "CastlingMove",
+        |    "type": "CastlingMoveBoard",
         |    "from": {
         |     "x": 5,
         |     "y": 6
@@ -66,7 +66,7 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         |     "y": 7
         |    },
         |    "previous": {
-        |     "moveType": "StandardMove",
+        |     "type": "StandardMoveBoard",
         |     "from": {
         |      "x": 0,
         |      "y": 1

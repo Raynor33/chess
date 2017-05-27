@@ -5,14 +5,14 @@ sealed trait MoveInstruction {
 }
 
 case class StandardMoveInstruction(from: Square, to: Square) extends MoveInstruction {
-  override def applyTo(game: Board) = StandardMove(from, to, game)
+  override def applyTo(game: Board) = StandardMoveBoard(from, to, game)
 }
 case class CastlingMoveInstruction(from: Square, to: Square) extends MoveInstruction {
-  override def applyTo(game: Board) = CastlingMove(from, to, game)
+  override def applyTo(game: Board) = CastlingMoveBoard(from, to, game)
 }
 case class EnPassantMoveInstruction(from: Square, to: Square) extends MoveInstruction {
-  override def applyTo(game: Board) = EnPassantMove(from, to, game)
+  override def applyTo(game: Board) = EnPassantMoveBoard(from, to, game)
 }
 case class PawnPromotionMoveInstruction(from: Square, to: Square, piece: Piece) extends MoveInstruction {
-  override def applyTo(game: Board) = PawnPromotionMove(from, to, piece, game)
+  override def applyTo(game: Board) = PawnPromotionMoveBoard(from, to, piece, game)
 }

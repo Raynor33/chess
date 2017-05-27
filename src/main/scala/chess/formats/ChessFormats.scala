@@ -27,22 +27,22 @@ object ChessFormats {
   }
 
   implicit object BoardReadsWrites extends Format[Board] {
-    def moveType[T <: Product](t: T) = Json.obj("moveType" -> JsString(t.productPrefix))
+    def moveType[T <: Product](t: T) = Json.obj("type" -> JsString(t.productPrefix))
     def writes(board: Board) = board match {
       case NilBoard => JsNull
-      case s: StandardMove => moveType(s) ++ Json.format[StandardMove].writes(s)
-      case c: CastlingMove => moveType(c) ++ Json.format[CastlingMove].writes(c)
-      case e: EnPassantMove => moveType(e) ++ Json.format[EnPassantMove].writes(e)
-      case p: PawnPromotionMove => moveType(p) ++ Json.format[PawnPromotionMove].writes(p)
+      case s: StandardMoveBoard => moveType(s) ++ Json.format[StandardMoveBoard].writes(s)
+      case c: CastlingMoveBoard => moveType(c) ++ Json.format[CastlingMoveBoard].writes(c)
+      case e: EnPassantMoveBoard => moveType(e) ++ Json.format[EnPassantMoveBoard].writes(e)
+      case p: PawnPromotionMoveBoard => moveType(p) ++ Json.format[PawnPromotionMoveBoard].writes(p)
     }
     def reads(json: JsValue) = {
       json match {
         case JsNull => JsSuccess(NilBoard)
-        case o: JsObject => (o \ "moveType").toOption match {
-            case Some(JsString("StandardMove")) => Json.format[StandardMove].reads(json)
-            case Some(JsString("CastlingMove")) => Json.format[CastlingMove].reads(json)
-            case Some(JsString("EnPassantMove")) => Json.format[EnPassantMove].reads(json)
-            case Some(JsString("PawnPromotionMove")) => Json.format[PawnPromotionMove].reads(json)
+        case o: JsObject => (o \ "type").toOption match {
+            case Some(JsString("StandardMoveBoard")) => Json.format[StandardMoveBoard].reads(json)
+            case Some(JsString("CastlingMoveBoard")) => Json.format[CastlingMoveBoard].reads(json)
+            case Some(JsString("EnPassantMoveBoard")) => Json.format[EnPassantMoveBoard].reads(json)
+            case Some(JsString("PawnPromotionMoveBoard")) => Json.format[PawnPromotionMoveBoard].reads(json)
             case _ => JsError()
           }
         case _ => JsError()

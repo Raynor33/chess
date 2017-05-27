@@ -1,6 +1,6 @@
 package chess.mongo
 
-import chess.core.{Game, StandardMove}
+import chess.core.{Game, StandardMoveBoard}
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._

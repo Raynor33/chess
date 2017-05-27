@@ -9,7 +9,7 @@ trait Board {
   def valid: Boolean
 }
 
-trait Move extends Board {
+trait MoveBoard extends Board {
   def previous: Board
 
   def from: Square
@@ -41,12 +41,12 @@ trait Move extends Board {
   def checkmate = check(toMove) && {
     val allPositions = currentPositions
     !allPositions.filter(_._2.colour == toMove).keys.exists(f =>
-      Square.allSquares.exists(t => StandardMove(f, t, this).valid || EnPassantMove(f, t, this).valid)
+      Square.allSquares.exists(t => StandardMoveBoard(f, t, this).valid || EnPassantMoveBoard(f, t, this).valid)
     )
   }
 }
 
-case class StandardMove(from: Square, to: Square, previous: Board) extends Move {
+case class StandardMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     (previousPositions
@@ -68,7 +68,7 @@ case class StandardMove(from: Square, to: Square, previous: Board) extends Move 
   }
 }
 
-case class CastlingMove(from: Square, to: Square, previous: Board) extends Move {
+case class CastlingMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
   private val castleFrom = if (to.x > from.x) Square(7, from.y) else Square(0, from.y)
   private val castleTo = if (to.x > from.x) Square(5, from.y) else Square(3, from.y)
 
@@ -93,7 +93,7 @@ case class CastlingMove(from: Square, to: Square, previous: Board) extends Move 
       Math.abs(to.x - from.x) == 2 &&
       to.y == from.y &&
       !previous.check(previous.toMove) &&
-      !StandardMove(from, Square(from.x + moveSignum, from.y), previous).check(previous.toMove) &&
+      !StandardMoveBoard(from, Square(from.x + moveSignum, from.y), previous).check(previous.toMove) &&
       (from.x + moveSignum until castleFrom.x).forall(x =>
         !previousPositions.contains(Square(x, from.y))
       )
@@ -101,7 +101,7 @@ case class CastlingMove(from: Square, to: Square, previous: Board) extends Move 
 
 }
 
-case class EnPassantMove(from: Square, to: Square, previous: Board) extends Move {
+case class EnPassantMoveBoard(from: Square, to: Square, previous: Board) extends MoveBoard {
   override def currentPositions = {
     val previousPositions = previous.currentPositions
     (previousPositions
@@ -115,7 +115,7 @@ case class EnPassantMove(from: Square, to: Square, previous: Board) extends Move
   override def moveLegal = {
     val previousPositions = previous.currentPositions
     previous match {
-      case move: Move =>
+      case move: MoveBoard =>
         previousPositions.get(Square(to.x, from.y)).exists(_ match {
           case pawn: Pawn =>
             move.from.y == pawn.colour.pawnRow &&
@@ -131,11 +131,11 @@ case class EnPassantMove(from: Square, to: Square, previous: Board) extends Move
   }
 }
 
-case class PawnPromotionMove(from: Square, to: Square, promotion: Piece, previous: Board) extends Move {
+case class PawnPromotionMoveBoard(from: Square, to: Square, promotion: Piece, previous: Board) extends MoveBoard {
   override def currentPositions = previous.currentPositions - from + (to -> promotion)
 
   override def moveLegal = previous.currentPositions.get(from).exists(_ match {
-    case p: Pawn => StandardMove(from, to, previous).moveLegal
+    case p: Pawn => StandardMoveBoard(from, to, previous).moveLegal
     case _ => false
   }) && (promotion match {
     case p: Pawn => false

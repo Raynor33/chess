@@ -56,8 +56,8 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
 
   "A Move" should {
     val previousMock = mock[Board]
-    val currentMock = mock[Move]
-    val move = new Move {
+    val currentMock = mock[MoveBoard]
+    val move = new MoveBoard {
       val previous = previousMock
       val from = mock[Square]
       val to = mock[Square]
@@ -231,7 +231,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     when(previousMock.toMove).thenReturn(White)
 
     "update the currentPositions correctly for a move into space" in {
-      val move = StandardMove(whitePiece1Square, Square(2, 4), previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, Square(2, 4), previousMock)
       move.currentPositions should be (
         Map(
           Square(2, 4) -> whitePiece1,
@@ -242,7 +242,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       )
     }
     "update the currentPositions correctly for a move when taking" in {
-      val move = StandardMove(whitePiece2Square, blackPiece1Square, previousMock)
+      val move = StandardMoveBoard(whitePiece2Square, blackPiece1Square, previousMock)
       move.currentPositions should be (
         Map(
           whitePiece1Square -> whitePiece1,
@@ -253,42 +253,42 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     }
 
     "not be legal if there is no piece at the from square" in {
-      val move = StandardMove(Square(0, 0), Square(1, 1), previousMock)
+      val move = StandardMoveBoard(Square(0, 0), Square(1, 1), previousMock)
       move.moveLegal should be (false)
     }
     "not be legal if the piece at from square is not toMove colour" in {
       when(blackPiece1.pathFor(blackPiece1Square, Square(5, 4), false)).thenReturn(Some(Set.empty[Square]))
-      val move = StandardMove(blackPiece1Square, Square(5, 4), previousMock)
+      val move = StandardMoveBoard(blackPiece1Square, Square(5, 4), previousMock)
       move.moveLegal should be (false)
     }
     "not be legal if the path is blocked by a piece of the same colour" in {
       when(whitePiece1.pathFor(whitePiece1Square, Square(2, 4), false)).thenReturn(Some(Set(whitePiece2Square)));
-      val move = StandardMove(whitePiece1Square, Square(2, 4), previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, Square(2, 4), previousMock)
       move.moveLegal should be (false)
     }
     "not be legal if the destination is blocked by a piece of the same colour" in {
       when(whitePiece1.pathFor(whitePiece1Square, whitePiece2Square, true)).thenReturn(Some(Set.empty[Square]))
-      val move = StandardMove(whitePiece1Square, whitePiece2Square, previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, whitePiece2Square, previousMock)
       move.moveLegal should be (false)
     }
     "not be legal if the path is blocked by a piece of the opposite colour" in {
       when(whitePiece1.pathFor(whitePiece1Square, Square(2, 4), false)).thenReturn(Some(Set(blackPiece1Square)));
-      val move = StandardMove(whitePiece1Square, Square(2, 4), previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, Square(2, 4), previousMock)
       move.moveLegal should be (false)
     }
     "not be legal if there is no path" in {
       when(whitePiece1.pathFor(whitePiece1Square, Square(2, 4), false)).thenReturn(None);
-      val move = StandardMove(whitePiece1Square, Square(2, 4), previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, Square(2, 4), previousMock)
       move.moveLegal should be (false)
     }
     "be legal if there is a clear path and the destination is empty" in {
       when(whitePiece1.pathFor(whitePiece1Square, Square(2, 4), false)).thenReturn(Some(Set.empty[Square]))
-      val move = StandardMove(whitePiece1Square, Square(2, 4), previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, Square(2, 4), previousMock)
       move.moveLegal should be (true)
     }
     "be legal if there is a clear path and the destination has an opponent" in {
       when(whitePiece1.pathFor(whitePiece1Square, blackPiece1Square, true)).thenReturn(Some(Set.empty[Square]))
-      val move = StandardMove(whitePiece1Square, blackPiece1Square, previousMock)
+      val move = StandardMoveBoard(whitePiece1Square, blackPiece1Square, previousMock)
       move.moveLegal should be (true)
     }
   }
@@ -330,7 +330,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     when(previousMock.currentPositions).thenReturn(previousPositions)
     when(previousMock.toMove).thenReturn(White)
     "update the current positions correctly for the white king castling left" in {
-      CastlingMove(Square(4, 0), Square(2, 0), previousMock).currentPositions should be (
+      CastlingMoveBoard(Square(4, 0), Square(2, 0), previousMock).currentPositions should be (
         Map(
           Square(3, 0) -> whiteRook1,
           Square(2, 0) -> whiteKing,
@@ -342,7 +342,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       )
     }
     "update the current positions correctly for the white king castling right" in {
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).currentPositions should be (
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).currentPositions should be (
         Map(
           Square(0, 0) -> whiteRook1,
           Square(6, 0) -> whiteKing,
@@ -354,7 +354,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       )
     }
     "update the current positions correctly for the black king castling left" in {
-      CastlingMove(Square(4, 7), Square(2, 7), previousMock).currentPositions should be (
+      CastlingMoveBoard(Square(4, 7), Square(2, 7), previousMock).currentPositions should be (
         Map(
           Square(0, 0) -> whiteRook1,
           Square(4, 0) -> whiteKing,
@@ -366,7 +366,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       )
     }
     "update the current positions correctly for the black king castling right" in {
-      CastlingMove(Square(4, 7), Square(6, 7), previousMock).currentPositions should be (
+      CastlingMoveBoard(Square(4, 7), Square(6, 7), previousMock).currentPositions should be (
         Map(
           Square(0, 0) -> whiteRook1,
           Square(4, 0) -> whiteKing,
@@ -378,44 +378,44 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       )
     }
     "not be valid if from non king squares" in {
-      CastlingMove(Square(3, 0), Square(5, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(3, 0), Square(5, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if to squares not 2 horizontally from the king" in {
-      CastlingMove(Square(4, 0), Square(5, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(5, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if the king has moved" in {
       when(previousMock.hasNeverMoved(Square(4, 0))).thenReturn(false)
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if the castle has moved" in {
       when(previousMock.hasNeverMoved(Square(7, 0))).thenReturn(false)
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if it's not that player's turn" in {
       when(previousMock.toMove).thenReturn(Black)
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if the king is in check" in {
       when(previousMock.check(White)).thenReturn(true)
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if the square the king moves through is attackable" in {
       when(blackRook1.pathFor(Square(0, 7), Square(5, 0), true)).thenReturn(Some(Set.empty[Square]))
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
     }
     "not be valid if any square is blocked" in {
       for (x <- 5 to 6) {
         when(previousMock.currentPositions).thenReturn(previousPositions + (Square(x, 0) -> mock[Piece]))
-        CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
+        CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (false)
       }
     }
     "be valid when everything's ok" in {
-      CastlingMove(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (true)
+      CastlingMoveBoard(Square(4, 0), Square(6, 0), previousMock).moveLegal should be (true)
     }
   }
 
   "An En Passant move" should {
-    val previousMock = mock[Move]
+    val previousMock = mock[MoveBoard]
     val blackPawn = mock[Piece with Pawn]
     when(blackPawn.colour).thenReturn(Black)
     val whitePawn = mock[Piece with Pawn]
@@ -426,7 +426,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,4) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(5,4), Square(4,3), previousMock).currentPositions should be (
+      EnPassantMoveBoard(Square(5,4), Square(4,3), previousMock).currentPositions should be (
         Map(
           Square(4,3) -> whitePawn
         )
@@ -438,7 +438,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).currentPositions should be (
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).currentPositions should be (
         Map(
           Square(5,2) -> blackPawn
         )
@@ -456,7 +456,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
     "not be legal if it isn't a pawn" in {
       when(notPawn.colour).thenReturn(Black)
@@ -465,7 +465,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
     "not be legal if the target isn't a pawn" in {
       when(notPawn.colour).thenReturn(White)
@@ -474,7 +474,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> notPawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
     "not be legal if the target isn't an opponent pawn" in {
       val positions = Map(
@@ -482,7 +482,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> blackPawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
     "not be legal if the target piece hasn't just moved two from the first rank" in {
       when(previousMock.from).thenReturn(Square(5,2))
@@ -491,7 +491,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
     "be legal otherwise" in {
       val positions = Map(
@@ -499,7 +499,7 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
         Square(5,3) -> whitePawn
       )
       when(previousMock.currentPositions).thenReturn(positions)
-      EnPassantMove(Square(4,3), Square(5,2), previousMock).moveLegal should be (true)
+      EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (true)
     }
   }
 
@@ -521,25 +521,25 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     )
     when(previousMock.currentPositions).thenReturn(positions)
     "update the positions correctly when white moving into space" in {
-      val move = PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock)
+      val move = PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhiteQueen, previousMock)
       move.currentPositions should be (
         positions - Square(3,6) + (Square(3,7) -> WhiteQueen)
       )
     }
     "update the positions correctly when black moving into space" in {
-      val move = PawnPromotionMove(Square(3,1), Square(3,0), BlackQueen, previousMock)
+      val move = PawnPromotionMoveBoard(Square(3,1), Square(3,0), BlackQueen, previousMock)
       move.currentPositions should be (
         positions - Square(3,1) + (Square(3,0) -> BlackQueen)
       )
     }
     "update the positions correctly when white taking" in {
-      val move = PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock)
+      val move = PawnPromotionMoveBoard(Square(3,6), Square(4,7), WhiteQueen, previousMock)
       move.currentPositions should be (
         positions - Square(3,6) + (Square(4,7) -> WhiteQueen)
       )
     }
     "update the positions correctly when black taking" in {
-      val move = PawnPromotionMove(Square(3,1), Square(4,0), BlackQueen, previousMock)
+      val move = PawnPromotionMoveBoard(Square(3,1), Square(4,0), BlackQueen, previousMock)
       move.currentPositions should be (
         positions - Square(3,1) + (Square(4,0) -> BlackQueen)
       )
@@ -553,40 +553,40 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     when(blackPawn.pathFor(Square(3,1), Square(4,0), true)).thenReturn(Some(Set.empty[Square]))
     when(previousMock.toMove).thenReturn(White)
     "not allow promotion to a pawn" in {
-      PawnPromotionMove(Square(3,6), Square(3,7), WhitePawn, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhitePawn, previousMock).moveLegal should be (false)
     }
     "not allow promotion to a king" in {
-      PawnPromotionMove(Square(3,6), Square(3,7), WhiteKing, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhiteKing, previousMock).moveLegal should be (false)
     }
     "not allow promotion to a piece of the wrong colour" in {
-      PawnPromotionMove(Square(3,6), Square(3,7), BlackQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), BlackQueen, previousMock).moveLegal should be (false)
     }
     "not be legal for non-pawns" in {
       when(whiteOther.pathFor(Square(3,6), Square(3,7), false)).thenReturn(Some(Set.empty[Square]))
       when(previousMock.currentPositions).thenReturn(Map(
         Square(3,6) -> whiteOther
       ))
-      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
     }
     "not be legal if there is no piece at the from square" in {
-      PawnPromotionMove(Square(2,6), Square(2,7), WhiteQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(2,6), Square(2,7), WhiteQueen, previousMock).moveLegal should be (false)
     }
     "not be legal if the piece at from square is not toMove colour" in {
       when(previousMock.toMove).thenReturn(Black)
-      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (false)
     }
     "not be legal if the destination is blocked by a piece of the same colour" in {
       when(previousMock.currentPositions).thenReturn(positions + (Square(4,7) -> whiteOther))
-      PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (false)
     }
     "not be legal if there is no path" in {
-      PawnPromotionMove(Square(3,6), Square(5,7), WhiteQueen, previousMock).moveLegal should be (false)
+      PawnPromotionMoveBoard(Square(3,6), Square(5,7), WhiteQueen, previousMock).moveLegal should be (false)
     }
     "be legal if there is a clear path and the destination is empty" in {
-      PawnPromotionMove(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (true)
+      PawnPromotionMoveBoard(Square(3,6), Square(3,7), WhiteQueen, previousMock).moveLegal should be (true)
     }
     "be legal if there is a clear path and the destination has an opponent" in {
-      PawnPromotionMove(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (true)
+      PawnPromotionMoveBoard(Square(3,6), Square(4,7), WhiteQueen, previousMock).moveLegal should be (true)
     }
   }
 }

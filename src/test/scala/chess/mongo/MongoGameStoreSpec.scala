@@ -74,7 +74,7 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
       withEmbedMongoFixture(port) { mongodProps =>
         val gameStore = MongoGameStore(List(s"localhost:$port"))
         val game = Game("1", "2", NilBoard)
-        val game2 = Game("1", "2", StandardMove(Square(1,2), Square(2,2), NilBoard))
+        val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame(id, game2)) {r =>
             r shouldBe Success
@@ -92,7 +92,7 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
       withEmbedMongoFixture(port) { mongodProps =>
         val gameStore = MongoGameStore(List(s"localhost:$port"))
         val game = Game("1", "2", NilBoard)
-        val game2 = Game("1", "2", StandardMove(Square(1,2), Square(2,2), NilBoard))
+        val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame("missing", game2)) {r =>
             r shouldBe NotFound
