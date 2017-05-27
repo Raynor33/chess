@@ -1,4 +1,7 @@
-package chess.core
+package chess.store
+
+import chess.core.Game
+import chess.service.GameServiceResponse
 
 import scala.concurrent.Future
 

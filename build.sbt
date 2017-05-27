@@ -1,15 +1,30 @@
-lazy val root = (project in file(".")).
-  settings(
-    parallelExecution := false,
-    organization := "com.example",
-    scalaVersion := "2.11.8",
-    version := "0.1.0-SNAPSHOT",
-    name := "chess",
-    libraryDependencies += "org.slf4j" % "slf4j-log4j12" % "1.7.25",
-    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.15",
-    libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.12.3",
-    libraryDependencies += "org.reactivemongo" %% "reactivemongo" % "0.12.3",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test,
-    libraryDependencies += "org.mockito" % "mockito-core" % "2.7.5" % Test,
-    libraryDependencies += "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % Test
-  )
+name := "chess"
+
+version := "1.0-SNAPSHOT"
+
+scalaVersion := "2.11.8"
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
+libraryDependencies ++= Seq(
+    jdbc,
+    cache,
+    ws,
+    "com.typesafe.play" %% "play-json" % "2.5.15",
+    "org.julienrf" % "play-json-derived-codecs_2.11" % "3.3",
+    "org.reactivemongo" %% "play2-reactivemongo" % "0.12.3",
+    "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+    "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % Test,
+    "org.mockito" % "mockito-core" % "2.7.5" % Test,
+    "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % Test
+)
+
+resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+
+// Play provides two styles of routers, one expects its actions to be injected, the
+// other, legacy style, accesses its actions statically.
+routesGenerator := InjectedRoutesGenerator
+
+disablePlugins(PlayLayoutPlugin)
+
+PlayKeys.playMonitoredFiles ++= (sourceDirectories in (Compile, TwirlKeys.compileTemplates)).value

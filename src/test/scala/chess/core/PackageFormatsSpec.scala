@@ -1,12 +1,11 @@
-package chess.formats
+package chess.core
 
-import chess.core._
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json._
 
-class ChessFormatsSpec extends WordSpec with Matchers {
+class PackageFormatsSpec extends WordSpec with Matchers {
 
-  "ChessFormats" should {
+  "Package formats" should {
     val testGame = Game(
       whitePlayerId = "asdf",
       blackPlayerId = "qwer",
@@ -82,7 +81,6 @@ class ChessFormatsSpec extends WordSpec with Matchers {
         | }
         |}
       """.stripMargin)
-    import chess.formats.ChessFormats._
     "enable a game to be serialised correctly" in {
       Json.writes[Game].writes(testGame) shouldBe testGameJson
     }

@@ -1,15 +1,19 @@
-package chess.mongo
+package chess.store
 
 import java.net.ServerSocket
 
 import chess.core._
+import chess.service.{Missing, Success}
 import com.github.simplyscala.MongoEmbedDatabase
 import com.sun.xml.internal.bind.api.impl.NameConverter.Standard
 import org.scalatest.concurrent.ScalaFutures
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
+import play.api.Configuration
 
-class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase with ScalaFutures {
+class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase with ScalaFutures with MockitoSugar {
 
   private def freePort = {
     var socket: ServerSocket = null
@@ -25,12 +29,16 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
   private def withFreePortFixture(f: Int => Any) = {
     f(freePort)
   }
+
   implicit val defaultPatience = PatienceConfig(timeout = Span(200, Seconds), interval = Span(1, Millis))
+
+  val mockConfiguration: Configuration = mock[Configuration]
 
   "MongoGameStore should allow insert" in {
     withFreePortFixture { port =>
       withEmbedMongoFixture(port) { mongodProps =>
-        val gameStore = MongoGameStore(List(s"localhost:$port"))
+        when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
+        val gameStore = new MongoGameStore(mockConfiguration)
         whenReady(gameStore.insertGame(Game("1", "2", NilBoard))) {
           _.nonEmpty shouldBe true
         }
@@ -41,7 +49,8 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
   "MongoGameStore give none when missing" in {
     withFreePortFixture { port =>
       withEmbedMongoFixture(port) { mongodProps =>
-        val gameStore = MongoGameStore(List(s"localhost:$port"))
+        when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
+        val gameStore = new MongoGameStore(mockConfiguration)
         whenReady(gameStore.getGame("missing")) {
           _ shouldBe None
         }
@@ -52,7 +61,8 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
   "MongoGameStore should allow correct retrieval" in {
     withFreePortFixture { port =>
       withEmbedMongoFixture(port) { mongodProps =>
-        val gameStore = MongoGameStore(List(s"localhost:$port"))
+        when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
+        val gameStore = new MongoGameStore(mockConfiguration)
         val game = Game("1", "2", NilBoard)
         val game2 = Game("3", "4", NilBoard)
         whenReady(gameStore.insertGame(game)) {id =>
@@ -72,12 +82,13 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
   "MongoGameStore should allow update" in {
     withFreePortFixture { port =>
       withEmbedMongoFixture(port) { mongodProps =>
-        val gameStore = MongoGameStore(List(s"localhost:$port"))
+        when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
+        val gameStore = new MongoGameStore(mockConfiguration)
         val game = Game("1", "2", NilBoard)
         val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame(id, game2)) {r =>
-            r shouldBe Success
+            r shouldBe Success(id, game2)
             whenReady(gameStore.getGame(id)) { g =>
               g shouldBe Some(game2)
             }
@@ -90,12 +101,13 @@ class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase 
   "MongoGameStore should return NotFound when missing" in {
     withFreePortFixture { port =>
       withEmbedMongoFixture(port) { mongodProps =>
-        val gameStore = MongoGameStore(List(s"localhost:$port"))
+        when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
+        val gameStore = new MongoGameStore(mockConfiguration)
         val game = Game("1", "2", NilBoard)
         val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame("missing", game2)) {r =>
-            r shouldBe NotFound
+            r shouldBe Missing
             whenReady(gameStore.getGame(id)) { g =>
               g shouldBe Some(game)
             }

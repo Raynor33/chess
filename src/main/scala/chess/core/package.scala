@@ -1,12 +1,10 @@
-package chess.formats
+package chess
 
-import chess.core._
 import play.api.libs.json._
-import play.api.libs.json.Reads._
-import play.api.libs.functional.syntax._
+import play.api.libs.json.Json
 
-object ChessFormats {
-  import play.api.libs.json.Json
+package object core {
+
 
   implicit object PieceReadWrites extends Format[Piece] {
     private val pieceMap = Seq(
@@ -39,12 +37,12 @@ object ChessFormats {
       json match {
         case JsNull => JsSuccess(NilBoard)
         case o: JsObject => (o \ "type").toOption match {
-            case Some(JsString("StandardMoveBoard")) => Json.format[StandardMoveBoard].reads(json)
-            case Some(JsString("CastlingMoveBoard")) => Json.format[CastlingMoveBoard].reads(json)
-            case Some(JsString("EnPassantMoveBoard")) => Json.format[EnPassantMoveBoard].reads(json)
-            case Some(JsString("PawnPromotionMoveBoard")) => Json.format[PawnPromotionMoveBoard].reads(json)
-            case _ => JsError()
-          }
+          case Some(JsString("StandardMoveBoard")) => Json.format[StandardMoveBoard].reads(json)
+          case Some(JsString("CastlingMoveBoard")) => Json.format[CastlingMoveBoard].reads(json)
+          case Some(JsString("EnPassantMoveBoard")) => Json.format[EnPassantMoveBoard].reads(json)
+          case Some(JsString("PawnPromotionMoveBoard")) => Json.format[PawnPromotionMoveBoard].reads(json)
+          case _ => JsError()
+        }
         case _ => JsError()
       }
     }
@@ -52,5 +50,5 @@ object ChessFormats {
 
   implicit val squareFormat = Json.format[Square]
   implicit val gameFormat = Json.format[Game]
-
+  implicit val ColourFormat: OFormat[Colour] = julienrf.json.derived.flat.oformat((__ \ "type").format[String])
 }

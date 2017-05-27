@@ -2,7 +2,7 @@ package chess.core
 
 import org.mockito.Mockito._
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatest.mock.MockitoSugar
 
 class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 

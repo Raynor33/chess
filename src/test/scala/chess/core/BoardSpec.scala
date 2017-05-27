@@ -3,7 +3,7 @@ package chess.core
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatest.mock.MockitoSugar
 
 class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 
@@ -414,11 +414,13 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     }
   }
 
+  trait PawnPiece extends Pawn with Piece
+
   "An En Passant move" should {
     val previousMock = mock[MoveBoard]
-    val blackPawn = mock[Piece with Pawn]
+    val blackPawn = mock[PawnPiece]
     when(blackPawn.colour).thenReturn(Black)
-    val whitePawn = mock[Piece with Pawn]
+    val whitePawn = mock[PawnPiece]
     when(whitePawn.colour).thenReturn(White)
     "update the positions correctly for a white capture" in {
       val positions = Map(
@@ -505,13 +507,13 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
 
   "A Pawn Promotion move" should {
     val previousMock = mock[Board]
-    val whitePawn = mock[Piece with Pawn]
+    val whitePawn = mock[PawnPiece]
     when(whitePawn.colour).thenReturn(White)
     val whiteOther = mock[Piece]
     when(whiteOther.colour).thenReturn(White)
-    val blackPawn = mock[Piece with Pawn]
+    val blackPawn = mock[PawnPiece]
     when(blackPawn.colour).thenReturn(Black)
-    val blackOther = mock[Piece with Pawn]
+    val blackOther = mock[PawnPiece]
     when(blackOther.colour).thenReturn(Black)
     val positions = Map(
       Square(3,6) -> whitePawn,

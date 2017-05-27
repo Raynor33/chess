@@ -1,21 +1,32 @@
-package chess.mongo
+package chess.store
+
+import javax.inject.{Inject, Singleton}
 
 import chess.core._
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
-import reactivemongo.play.json.collection.JSONCollection
+import chess.service.{GameServiceResponse, Missing, Success}
+import chess.store.MongoGame._
+import com.google.inject.name.Named
+import play.api.Configuration
 import play.api.libs.json._
+import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
-import collection._
+import reactivemongo.play.json.collection.JSONCollection
+import scala.collection.JavaConverters._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import chess.formats.ChessFormats._
-import chess.mongo.MongoGame._
-import reactivemongo.api.MongoConnectionOptions
 
-case class MongoGameStore(uris: List[String]) extends GameStore {
+case class MongoGame(_id: BSONObjectID, game: Game)
+
+object MongoGame {
+  implicit val mongoGameFormat = Json.format[MongoGame]
+}
+
+@Singleton
+class MongoGameStore @Inject() (configuration: Configuration) extends GameStore {
   private val driver = new reactivemongo.api.MongoDriver()
-  private val connection = driver.connection(uris)
+  private val mongos = configuration.getStringList("mongo.uri").map(_.asScala).getOrElse(List("localhost:27017"))
+  private val connection = driver.connection(mongos)
 
   def gamesCollection = connection.database("chess")
     .map(_.collection[JSONCollection]("game"))
@@ -37,8 +48,8 @@ case class MongoGameStore(uris: List[String]) extends GameStore {
 
   override def saveGame(id: String, game: Game): Future[GameServiceResponse] = {
     BSONObjectID.parse(id).toOption match {
-        case Some(bid) => gamesCollection.flatMap(_.update(Json.obj("_id" -> bid), MongoGame(bid, game)).map(r => if (r.n > 0) Success else NotFound))
-        case None => Future.successful(NotFound)
+        case Some(bid) => gamesCollection.flatMap(_.update(Json.obj("_id" -> bid), MongoGame(bid, game)).map(r => if (r.n > 0) Success(id, game) else Missing))
+        case None => Future.successful(Missing)
     }
   }
 }

@@ -1,4 +1,6 @@
-package chess.core
+package chess.model
+
+import chess.core._
 
 sealed trait MoveInstruction {
   def applyTo(game: Board) : Board

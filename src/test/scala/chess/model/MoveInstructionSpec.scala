@@ -1,9 +1,8 @@
-package chess.core
+package chess.model
 
-import org.mockito.Mockito._
-import org.mockito.ArgumentMatchers._
+import chess.core._
+import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
-import org.scalatest.mockito.MockitoSugar
 
 class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
 
