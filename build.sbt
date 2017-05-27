@@ -9,7 +9,7 @@ lazy val root = (project in file(".")).
     libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.15",
     libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.12.3",
     libraryDependencies += "org.reactivemongo" %% "reactivemongo" % "0.12.3",
-    libraryDependencies += "org.scalatest" % "scalatest_2.11" % "3.0.1" % Test,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test,
     libraryDependencies += "org.mockito" % "mockito-core" % "2.7.5" % Test,
     libraryDependencies += "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % Test
   )
