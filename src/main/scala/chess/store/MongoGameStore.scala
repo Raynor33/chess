@@ -8,11 +8,12 @@ import chess.store.MongoGame._
 import com.google.inject.name.Named
 import play.api.Configuration
 import play.api.libs.json._
+import reactivemongo.api.{FailoverStrategy, MongoConnectionOptions}
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
-import scala.collection.JavaConverters._
 
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

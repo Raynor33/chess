@@ -1,38 +1,20 @@
 package chess.store
 
-import java.net.ServerSocket
-
 import chess.core._
 import chess.service.{Missing, Success}
+import chess.utils.FreePortFixture
 import com.github.simplyscala.MongoEmbedDatabase
-import com.sun.xml.internal.bind.api.impl.NameConverter.Standard
 import org.scalatest.concurrent.ScalaFutures
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
+import org.scalatest.{Matchers, WordSpec}
 import play.api.Configuration
 
-class MongoGameStoreSpec extends WordSpec with Matchers with MongoEmbedDatabase with ScalaFutures with MockitoSugar {
-
-  private def freePort = {
-    var socket: ServerSocket = null
-    try {
-      socket = new ServerSocket(0)
-      socket.getLocalPort
-    }
-    finally {
-      socket.close()
-    }
-  }
-
-  private def withFreePortFixture(f: Int => Any) = {
-    f(freePort)
-  }
-
-  implicit val defaultPatience = PatienceConfig(timeout = Span(200, Seconds), interval = Span(1, Millis))
+class MongoGameStoreSpec extends WordSpec with Matchers with ScalaFutures with MockitoSugar with FreePortFixture with MongoEmbedDatabase {
 
   val mockConfiguration: Configuration = mock[Configuration]
+  implicit val defaultPatience = PatienceConfig(timeout = Span(1, Seconds), interval = Span(1, Millis))
 
   "MongoGameStore should allow insert" in {
     withFreePortFixture { port =>
