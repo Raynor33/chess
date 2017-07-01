@@ -4,7 +4,7 @@ import org.mockito.Mockito._
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar
 
-class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar {
+class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with MockitoSugar with BeforeAndAfter {
 
   "A WhitePiece" should {
     "be white" in {
@@ -23,27 +23,31 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   class MockSquare extends Square(0,0)
 
   val fromMock = mock[MockSquare]
-  val toSquare = Square(1,2)
+  val toMock = mock[MockSquare]
+
+  before {
+    reset(fromMock, toMock)
+  }
 
   "A King" should {
     val king = WhiteKing
     "allow a flat move of one" in {
-      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (None)
-      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (Some(Set.empty[Square]))
-      king.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      king.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toMock, 1)) thenReturn (None)
+      when(fromMock.flatLineTo(toMock, 1)) thenReturn (Some(Set.empty[Square]))
+      king.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      king.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of one" in {
-      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (None)
-      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (Some(Set.empty[Square]))
-      king.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      king.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toMock, 1)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toMock, 1)) thenReturn (Some(Set.empty[Square]))
+      king.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      king.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-      when(fromMock.flatLineTo(toSquare, 1)) thenReturn (None)
-      when(fromMock.diagonalLineTo(toSquare, 1)) thenReturn (None)
-      king.pathFor(fromMock, toSquare, false) should be(None)
-      king.pathFor(fromMock, toSquare, true) should be(None)
+      when(fromMock.flatLineTo(toMock, 1)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toMock, 1)) thenReturn (None)
+      king.pathFor(fromMock, toMock, false) should be(None)
+      king.pathFor(fromMock, toMock, true) should be(None)
     }
     "be king" in {
       king.isKing should be(true)
@@ -53,22 +57,22 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Queen" should {
     val queen = WhiteQueen
     "allow a flat move of eight" in {
-      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
-      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
-      queen.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      queen.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toMock, 8)) thenReturn (None)
+      when(fromMock.flatLineTo(toMock, 8)) thenReturn (Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "allow a diagonal move of eight" in {
-      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
-      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
-      queen.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      queen.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toMock, 8)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toMock, 8)) thenReturn (Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      queen.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if neither flat nor diagonal is possible" in {
-      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
-      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
-      queen.pathFor(fromMock, toSquare, false) should be(None)
-      queen.pathFor(fromMock, toSquare, true) should be(None)
+      when(fromMock.flatLineTo(toMock, 8)) thenReturn (None)
+      when(fromMock.diagonalLineTo(toMock, 8)) thenReturn (None)
+      queen.pathFor(fromMock, toMock, false) should be(None)
+      queen.pathFor(fromMock, toMock, true) should be(None)
     }
     "not be king" in {
       queen.isKing should be(false)
@@ -78,14 +82,14 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Bishop" should {
     val bishop = WhiteBishop
     "allow a diagonal move of eight" in {
-      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
-      bishop.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      bishop.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.diagonalLineTo(toMock, 8)) thenReturn (Some(Set.empty[Square]))
+      bishop.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      bishop.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if a diagonal is not possible" in {
-      when(fromMock.diagonalLineTo(toSquare, 8)) thenReturn (None)
-      bishop.pathFor(fromMock, toSquare, false) should be(None)
-      bishop.pathFor(fromMock, toSquare, true) should be(None)
+      when(fromMock.diagonalLineTo(toMock, 8)) thenReturn (None)
+      bishop.pathFor(fromMock, toMock, false) should be(None)
+      bishop.pathFor(fromMock, toMock, true) should be(None)
     }
     "not be king" in {
       bishop.isKing should be(false)
@@ -150,54 +154,79 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   "A Rook" should {
     val rook = WhiteRook
     "allow a flat move of eight" in {
-      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (Some(Set.empty[Square]))
-      rook.pathFor(fromMock, toSquare, false) should be(Some(Set.empty[Square]))
-      rook.pathFor(fromMock, toSquare, true) should be(Some(Set.empty[Square]))
+      when(fromMock.flatLineTo(toMock, 8)) thenReturn (Some(Set.empty[Square]))
+      rook.pathFor(fromMock, toMock, false) should be(Some(Set.empty[Square]))
+      rook.pathFor(fromMock, toMock, true) should be(Some(Set.empty[Square]))
     }
     "not allow a move if a flat move is not possible" in {
-      when(fromMock.flatLineTo(toSquare, 8)) thenReturn (None)
-      rook.pathFor(fromMock, toSquare, false) should be(None)
-      rook.pathFor(fromMock, toSquare, true) should be(None)
+      when(fromMock.flatLineTo(toMock, 8)) thenReturn (None)
+      rook.pathFor(fromMock, toMock, false) should be(None)
+      rook.pathFor(fromMock, toMock, true) should be(None)
     }
     "not be king" in {
       rook.isKing should be(false)
     }
   }
 
-  // TODO should mock squares. Means mocking val needed. Mockito?
   "A white pawn" should {
     "allow a move of one up if not taking" in {
-      WhitePawn.pathFor(Square(0, 1), Square(0, 2), false) should be (Some(Set.empty[Square]))
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 1)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set.empty[Square]))
+      WhitePawn.pathFor(fromMock, toMock, false) should be (Some(Set.empty[Square]))
     }
     "allow a move of two up if not taking and in the first row" in {
-      WhitePawn.pathFor(Square(0, 1), Square(0, 3), false) should be (Some(Set(Square(0, 2))))
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 2)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set(jumpedSquare)))
+      WhitePawn.pathFor(fromMock, toMock, false) should be (Some(Set(jumpedSquare)))
+    }
+    "not allow a move of two up if not in the first row" in {
+      when(fromMock.y).thenReturn(White.pawnRow + 1)
+      when(toMock.y).thenReturn(White.pawnRow + 3)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.flatLineTo(toMock, 1)).thenReturn(None)
+      WhitePawn.pathFor(fromMock, toMock, false) should be (None)
     }
     "not allow a move of one up if taking" in {
-      WhitePawn.pathFor(Square(0, 1), Square(0, 2), true) should be (None)
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(None)
+      when(fromMock.flatLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      WhitePawn.pathFor(fromMock, toMock, true) should be (None)
     }
     "not allow a move of two up if taking" in {
-      WhitePawn.pathFor(Square(0, 1), Square(0, 3), true) should be (None)
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 2)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(None)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set(jumpedSquare)))
+      WhitePawn.pathFor(fromMock, toMock, true) should be (None)
     }
     "not allow a move of one down" in {
-      WhitePawn.pathFor(Square(0, 1), Square(0, 0), false) should be (None)
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow - 1)
+      WhitePawn.pathFor(fromMock, toMock, false) should be (None)
     }
-    "allow a move of one diagonally left if taking" in {
-      WhitePawn.pathFor(Square(1, 1), Square(0, 2), true) should be (Some(Set.empty[Square]))
+    "allow a move of one diagonally if taking" in {
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      WhitePawn.pathFor(fromMock, toMock, true) should be (Some(Set.empty[Square]))
     }
-    "allow a move of one diagonally right if taking" in {
-      WhitePawn.pathFor(Square(1, 1), Square(2, 2), true) should be (Some(Set.empty[Square]))
+    "not allow a move of one diagonally if not taking" in {
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow + 1)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(None)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      WhitePawn.pathFor(fromMock, toMock, false) should be (None)
     }
-    "not allow a move of one diagonally left if not taking" in {
-      WhitePawn.pathFor(Square(1, 1), Square(0, 2), false) should be (None)
-    }
-    "not allow a move of one diagonally right if not taking" in {
-      WhitePawn.pathFor(Square(1, 1), Square(2, 2), false) should be (None)
-    }
-    "not allow a move of one diagonally left and down" in {
-      WhitePawn.pathFor(Square(1, 1), Square(0, 0), true) should be (None)
-    }
-    "not allow a move of one diagonally right and down" in {
-      WhitePawn.pathFor(Square(1, 1), Square(2, 0), true) should be (None)
+    "not allow a move of one diagonally back" in {
+      when(fromMock.y).thenReturn(White.pawnRow)
+      when(toMock.y).thenReturn(White.pawnRow - 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      WhitePawn.pathFor(fromMock, toMock, true) should be (None)
     }
     "not be king" in {
       WhitePawn.isKing should be(false)
@@ -205,38 +234,64 @@ class PieceSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
   }
 
   "A black pawn" should {
-    "allow a move of one down if not taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(1, 5), false) should be (Some(Set.empty[Square]))
+    "allow a move of one up if not taking" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 1)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set.empty[Square]))
+      BlackPawn.pathFor(fromMock, toMock, false) should be (Some(Set.empty[Square]))
     }
-    "allow a move of two down if not taking and in the first row" in {
-      BlackPawn.pathFor(Square(1, 6), Square(1, 4), false) should be (Some(Set(Square(1, 5))))
+    "allow a move of two up if not taking and in the first row" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 2)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set(jumpedSquare)))
+      BlackPawn.pathFor(fromMock, toMock, false) should be (Some(Set(jumpedSquare)))
     }
-    "not allow a move of one down if taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(1, 5), true) should be (None)
+    "not allow a move of two up if not in the first row" in {
+      when(fromMock.y).thenReturn(Black.pawnRow - 1)
+      when(toMock.y).thenReturn(Black.pawnRow - 3)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.flatLineTo(toMock, 1)).thenReturn(None)
+      BlackPawn.pathFor(fromMock, toMock, false) should be (None)
     }
-    "not allow a move of two down if taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(1, 4), true) should be (None)
+    "not allow a move of one up if taking" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(None)
+      when(fromMock.flatLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      BlackPawn.pathFor(fromMock, toMock, true) should be (None)
     }
-    "not allow a move of one up" in {
-      BlackPawn.pathFor(Square(1, 6), Square(1, 7), false) should be (None)
+    "not allow a move of two up if taking" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 2)
+      val jumpedSquare = Square(2,2)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(None)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(Some(Set(jumpedSquare)))
+      BlackPawn.pathFor(fromMock, toMock, true) should be (None)
     }
-    "allow a move of one diagonally left if taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(0, 5), true) should be (Some(Set.empty[Square]))
+    "not allow a move of one down" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow + 1)
+      BlackPawn.pathFor(fromMock, toMock, false) should be (None)
     }
-    "allow a move of one diagonally right if taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(2, 5), true) should be (Some(Set.empty[Square]))
+    "allow a move of one diagonally if taking" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      BlackPawn.pathFor(fromMock, toMock, true) should be (Some(Set.empty[Square]))
     }
-    "not allow a move of one diagonally left if not taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(0, 5), false) should be (None)
+    "not allow a move of one diagonally if not taking" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow - 1)
+      when(fromMock.flatLineTo(toMock, 2)).thenReturn(None)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      BlackPawn.pathFor(fromMock, toMock, false) should be (None)
     }
-    "not allow a move of one diagonally right if not taking" in {
-      BlackPawn.pathFor(Square(1, 6), Square(2, 5), false) should be (None)
-    }
-    "not allow a move of one diagonally left and up" in {
-      BlackPawn.pathFor(Square(1, 6), Square(0, 7), true) should be (None)
-    }
-    "not allow a move of one diagonally right and up" in {
-      BlackPawn.pathFor(Square(1, 6), Square(2, 7), true) should be (None)
+    "not allow a move of one diagonally back" in {
+      when(fromMock.y).thenReturn(Black.pawnRow)
+      when(toMock.y).thenReturn(Black.pawnRow + 1)
+      when(fromMock.diagonalLineTo(toMock, 1)).thenReturn(Some(Set.empty[Square]))
+      BlackPawn.pathFor(fromMock, toMock, true) should be (None)
     }
     "not be king" in {
       BlackPawn.isKing should be(false)
