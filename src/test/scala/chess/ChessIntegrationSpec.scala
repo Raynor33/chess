@@ -14,7 +14,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import play.api.test.Helpers._
 
-class ChessIntegrationTest extends PlaySpec with FreePortFixture with MockitoSugar with ScalaFutures with OneServerPerSuite with MongoEmbedDatabase with BeforeAndAfterAll {
+class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSugar with ScalaFutures with OneServerPerSuite with MongoEmbedDatabase with BeforeAndAfterAll {
 
   private val mongoPort = freePort
 
