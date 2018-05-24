@@ -24,7 +24,6 @@ class GameService @Inject() (gameStore: GameStore) {
     gameStore.getGame(gameId).flatMap {
       case None => Future.successful(Missing)
       case Some(game) => {
-        val expectedPlayer = if (game.board.toMove == White) game.whitePlayerId else game.blackPlayerId
         val result = moveInstruction.applyTo(game.board)
         if (result.valid) {
           gameStore.saveGame(gameId, game.copy(board = result))
