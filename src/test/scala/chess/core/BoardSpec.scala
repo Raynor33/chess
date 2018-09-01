@@ -40,8 +40,8 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     "say that it's white's move" in {
       NilBoard.toMove should be (White)
     }
-    "not be in checkmate" in {
-      NilBoard.checkmate should be (false)
+    "not have a result" in {
+      NilBoard.result should be (None)
     }
     "not be in check for white" in {
       NilBoard.check(White) should be (false)
@@ -118,6 +118,8 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       blackKingSquare -> blackKing
     )
     when(currentMock.currentPositions).thenReturn(allPositions)
+    when(previousMock.valid).thenReturn(true)
+    when(currentMock.moveLegal).thenReturn(true)
     "say black is not in check if no white piece is attacking it" in {
       move.check(Black) should be (false)
     }
@@ -150,27 +152,31 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
     }
 
     "not be checkmate if it's not check" in {
-      when(previousMock.toMove) thenReturn (Black)
-      move.checkmate should be (false)
+      when(previousMock.toMove) thenReturn (White)
+      move.result should be (None)
     }
     "not be checkmate if an evasion escape is possible" in {
-      when(previousMock.toMove) thenReturn (Black)
+      when(previousMock.toMove) thenReturn (White)
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(blackKing.pathFor(blackKingSquare, escapeSquare, false)).thenReturn(Some(Set.empty[Square]))
+      move.result shouldBe None
     }
     "not be checkmate if a blocking escape is possible" in {
-      when(previousMock.toMove) thenReturn (Black)
+      when(previousMock.toMove) thenReturn (White)
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set(blockSquare)))
       when(blackOther.pathFor(blackOtherSquare, blockSquare, false)).thenReturn(Some(Set.empty[Square]))
+      move.result shouldBe None
     }
     "not be checkmate if a taking escape is possible" in {
-      when(previousMock.toMove) thenReturn (Black)
+      when(previousMock.toMove) thenReturn (White)
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(blackOther.pathFor(blackOtherSquare, whiteOtherSquare, true)).thenReturn(Some(Set.empty[Square]))
+      move.result shouldBe None
     }
     "be checkmate if no escape is possible" in {
-      when(previousMock.toMove) thenReturn (Black)
+      when(previousMock.toMove) thenReturn (White)
       when(whiteOther.pathFor(whiteOtherSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
+      move.result shouldBe Some(Checkmate(Black))
     }
 
 
@@ -495,11 +501,21 @@ class BoardSpec extends WordSpec with Matchers with OneInstancePerTest with Mock
       when(previousMock.currentPositions).thenReturn(positions)
       EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (false)
     }
+    "not be legal if the to square isn't correct" in {
+      val positions = Map(
+        Square(4,3) -> blackPawn,
+        Square(5,3) -> whitePawn
+      )
+      when(previousMock.currentPositions).thenReturn(positions)
+      when(blackPawn.pathFor(Square(4,3), Square(5,0), true)).thenReturn(None)
+      EnPassantMoveBoard(Square(4,3), Square(5,0), previousMock).moveLegal should be (false)
+    }
     "be legal otherwise" in {
       val positions = Map(
         Square(4,3) -> blackPawn,
         Square(5,3) -> whitePawn
       )
+      when(blackPawn.pathFor(Square(4,3), Square(5,2), true)).thenReturn(Some(Set.empty[Square]))
       when(previousMock.currentPositions).thenReturn(positions)
       EnPassantMoveBoard(Square(4,3), Square(5,2), previousMock).moveLegal should be (true)
     }

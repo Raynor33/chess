@@ -3,7 +3,7 @@ package chess.core
 trait Board {
   def currentPositions: Map[Square, Piece]
   def toMove: Colour
-  def checkmate: Boolean
+  def result: Option[Result]
   def check(colour: Colour): Boolean
   def hasNeverMoved(square:Square) : Boolean
   def valid: Boolean
@@ -38,12 +38,12 @@ trait MoveBoard extends Board {
       )
   }
 
-  def checkmate = check(toMove) && {
+  def result = if (check(toMove) && {
     val allPositions = currentPositions
     !allPositions.filter(_._2.colour == toMove).keys.exists(f =>
       Square.allSquares.exists(t => StandardMoveBoard(f, t, this).valid || EnPassantMoveBoard(f, t, this).valid)
     )
-  }
+  }) Some(Checkmate(toMove)) else None
 }
 
 case class StandardMoveBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
@@ -123,7 +123,8 @@ case class EnPassantMoveBoard(from: Square, to: Square, previousBoard: Board) ex
           case _ => false
         }) &&
         previousPositions.get(from).exists(_ match {
-          case pawn: Pawn => pawn.colour == previousBoard.toMove
+          case pawn: Pawn => pawn.colour == previousBoard.toMove &&
+            pawn.pathFor(from, to, true).isDefined
           case _ => false
         })
       case _ => false
@@ -159,7 +160,7 @@ case object NilBoard extends Board {
   override def hasNeverMoved(square:Square) = true
   override val currentPositions = pieces
   override val toMove = White
-  override val checkmate = false
+  override val result = None
   override def check(colour: Colour) = false
   override val valid = true
 }
