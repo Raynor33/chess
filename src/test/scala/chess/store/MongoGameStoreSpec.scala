@@ -1,6 +1,7 @@
 package chess.store
 
 import chess.core._
+import chess.core.board.{NilBoard, StandardBoard}
 import chess.service.{Missing, Success}
 import chess.utils.FreePortFixture
 import com.github.simplyscala.MongoEmbedDatabase
@@ -67,7 +68,7 @@ class MongoGameStoreSpec extends WordSpec with Matchers with ScalaFutures with M
         when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
         val gameStore = new MongoGameStore(mockConfiguration)
         val game = Game("1", "2", NilBoard)
-        val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
+        val game2 = Game("1", "2", StandardBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame(id, game2)) {r =>
             r shouldBe Success(id, game2)
@@ -86,7 +87,7 @@ class MongoGameStoreSpec extends WordSpec with Matchers with ScalaFutures with M
         when(mockConfiguration.getStringList("mongo.uri")).thenReturn(Some(java.util.Arrays.asList(s"localhost:$port")))
         val gameStore = new MongoGameStore(mockConfiguration)
         val game = Game("1", "2", NilBoard)
-        val game2 = Game("1", "2", StandardMoveBoard(Square(1,2), Square(2,2), NilBoard))
+        val game2 = Game("1", "2", StandardBoard(Square(1,2), Square(2,2), NilBoard))
         whenReady(gameStore.insertGame(game)) {id =>
           whenReady(gameStore.saveGame("missing", game2)) {r =>
             r shouldBe Missing

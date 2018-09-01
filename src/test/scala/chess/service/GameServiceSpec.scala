@@ -1,6 +1,7 @@
 package chess.service
 
-import chess.core.{Board, Game, NilBoard, White}
+import chess.core.board.{Board, NilBoard}
+import chess.core.{Game, White}
 import chess.model.MoveInstruction
 import chess.store.GameStore
 import org.mockito.Mockito._

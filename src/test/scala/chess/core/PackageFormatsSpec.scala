@@ -1,5 +1,6 @@
 package chess.core
 
+import chess.core.board._
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json._
 
@@ -9,17 +10,17 @@ class PackageFormatsSpec extends WordSpec with Matchers {
     val testGame = Game(
       whitePlayerId = "asdf",
       blackPlayerId = "qwer",
-      board = PawnPromotionMoveBoard(
+      board = PawnPromotionBoard(
         from = Square(1,2),
         to = Square(2,3),
         promotion = WhiteQueen,
-        previousBoard = EnPassantMoveBoard(
+        previousBoard = EnPassantBoard(
           from = Square(3,4),
           to = Square(4,5),
-          previousBoard = CastlingMoveBoard(
+          previousBoard = CastlingBoard(
             from = Square(5,6),
             to = Square(6,7),
-            previousBoard = StandardMoveBoard(
+            previousBoard = StandardBoard(
               from = Square(0,1),
               to = Square(1,1),
               previousBoard = NilBoard
@@ -34,7 +35,7 @@ class PackageFormatsSpec extends WordSpec with Matchers {
         | "whitePlayerId": "asdf",
         | "blackPlayerId": "qwer",
         | "board": {
-        |  "type": "PawnPromotionMoveBoard",
+        |  "type": "PawnPromotionBoard",
         |  "from": {
         |   "x": 1,
         |   "y": 2
@@ -45,7 +46,7 @@ class PackageFormatsSpec extends WordSpec with Matchers {
         |  },
         |  "promotion": "WhiteQueen",
         |  "previousBoard": {
-        |   "type": "EnPassantMoveBoard",
+        |   "type": "EnPassantBoard",
         |   "from": {
         |    "x": 3,
         |    "y": 4
@@ -55,7 +56,7 @@ class PackageFormatsSpec extends WordSpec with Matchers {
         |    "y": 5
         |   },
         |   "previousBoard": {
-        |    "type": "CastlingMoveBoard",
+        |    "type": "CastlingBoard",
         |    "from": {
         |     "x": 5,
         |     "y": 6
@@ -65,7 +66,7 @@ class PackageFormatsSpec extends WordSpec with Matchers {
         |     "y": 7
         |    },
         |    "previousBoard": {
-        |     "type": "StandardMoveBoard",
+        |     "type": "StandardBoard",
         |     "from": {
         |      "x": 0,
         |      "y": 1

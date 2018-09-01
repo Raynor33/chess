@@ -1,6 +1,7 @@
 package chess.controllers
 
-import chess.core.{Game, NilBoard, Square}
+import chess.core.board.NilBoard
+import chess.core.{Game, Square}
 import chess.model.{DisplayGame, DisplayMove, StandardMoveInstruction, StartGameInstruction}
 import chess.service.{GameService, InvalidMove, Missing, Success}
 import org.mockito.Mockito._

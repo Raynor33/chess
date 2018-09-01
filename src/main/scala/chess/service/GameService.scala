@@ -3,6 +3,7 @@ package chess.service
 import javax.inject.Inject
 
 import chess.core._
+import chess.core.board.NilBoard
 import chess.model.{MoveInstruction, StartGameInstruction}
 import chess.store.GameStore
 

@@ -2,7 +2,7 @@ package chess.controllers
 
 import javax.inject.{Inject, Singleton}
 
-import chess.core.{Board, MoveBoard, NilBoard}
+import chess.core.board.{Board, MoveBoard, NilBoard}
 import chess.model._
 import chess.service.{GameService, InvalidMove, Missing, Success}
 import play.api.libs.json.Json

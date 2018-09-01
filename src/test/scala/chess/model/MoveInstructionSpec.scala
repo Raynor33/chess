@@ -1,6 +1,7 @@
 package chess.model
 
 import chess.core._
+import chess.core.board._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 
@@ -11,7 +12,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      StandardMoveInstruction(from, to).applyTo(game) should be (StandardMoveBoard(from, to, game))
+      StandardMoveInstruction(from, to).applyTo(game) should be (StandardBoard(from, to, game))
     }
   }
 
@@ -20,7 +21,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      CastlingMoveInstruction(from, to).applyTo(game) should be (CastlingMoveBoard(from, to, game))
+      CastlingMoveInstruction(from, to).applyTo(game) should be (CastlingBoard(from, to, game))
     }
   }
 
@@ -29,7 +30,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val game = mock[Board]
       val from = mock[Square]
       val to = mock[Square]
-      EnPassantMoveInstruction(from, to).applyTo(game) should be (EnPassantMoveBoard(from, to, game))
+      EnPassantMoveInstruction(from, to).applyTo(game) should be (EnPassantBoard(from, to, game))
     }
   }
 
@@ -39,7 +40,7 @@ class MoveInstructionSpec extends WordSpec with Matchers with OneInstancePerTest
       val from = mock[Square]
       val to = mock[Square]
       val piece = mock[Piece]
-      PawnPromotionMoveInstruction(from, to, piece).applyTo(game) should be (PawnPromotionMoveBoard(from, to, piece, game))
+      PawnPromotionMoveInstruction(from, to, piece).applyTo(game) should be (PawnPromotionBoard(from, to, piece, game))
     }
   }
 }
