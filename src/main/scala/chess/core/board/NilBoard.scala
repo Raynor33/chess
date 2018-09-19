@@ -18,6 +18,5 @@ case object NilBoard extends Board {
   override val currentPositions = pieces
   override val toMove = White
   override val result = None
-  override def check(colour: Colour) = false
   override val valid = true
 }

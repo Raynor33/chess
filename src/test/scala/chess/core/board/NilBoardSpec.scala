@@ -42,12 +42,6 @@ class NilBoardSpec extends WordSpec with Matchers with MockitoSugar {
     "not have a result" in {
       NilBoard.result should be (None)
     }
-    "not be in check for white" in {
-      NilBoard.check(White) should be (false)
-    }
-    "not be in check for black" in {
-      NilBoard.check(White) should be (false)
-    }
     "be valid" in {
       NilBoard.valid should be (true)
     }
