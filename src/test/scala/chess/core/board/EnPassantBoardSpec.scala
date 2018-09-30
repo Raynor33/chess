@@ -59,6 +59,12 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
   }
 
   "An EnPassantBoard" should {
+    "have the correct fromOption" in {
+      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).fromOption shouldBe Some(whitePawnSquare)
+    }
+    "have the correct toOption" in {
+      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).toOption shouldBe Some(behindBlackPawnSquare)
+    }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(previousMock.hasNeverMoved(emptySquare)).thenReturn(false)
@@ -98,8 +104,8 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     }
     "not be valid if the piece at from square is not toMove colour" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       when(previousMock.toMove).thenReturn(Black)
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
@@ -107,75 +113,75 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     "not be valid if the piece is not a pawn" in {
       when(previousMock.currentPositions).thenReturn(previousPositions + (whitePawnSquare -> whitePiece))
       when(whitePiece.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the victim piece is not a pawn" in {
       when(previousMock.currentPositions).thenReturn(previousPositions + (blackPawnSquare -> blackPiece))
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the victim piece has only moved one" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(behindBlackPawnSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(behindBlackPawnSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if not a valid pawn capture" in {
       when(whitePawn.pathFor(whitePawnSquare, blackPawnStartSquare, true)).thenReturn(None)
-      when(previousMock.from).thenReturn(behindBlackPawnSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(behindBlackPawnSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, blackPawnStartSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if it ends in check" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       when(blackPiece.pathFor(blackPieceSquare, whiteKingSquare, true)).thenReturn(Some(Set(whitePawnSquare)))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the previous isn't valid" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       when(previousMock.valid).thenReturn(false)
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the previous is complete" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       when(previousMock.result).thenReturn(Some(Checkmate(White)))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
     "be valid if everything's fine" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe true
     }
     "not have a result when there's no check" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.result shouldBe None
     }
     "not have a result when there's check that can be escaped by moving" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(whitePiece.pathFor(whitePieceSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(blackKing.pathFor(blackKingSquare, emptySquare, false)).thenReturn(Some(Set.empty[Square]))
@@ -183,8 +189,8 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     }
     "not have a result when there's check that can be escaped by blocking" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(whitePiece.pathFor(whitePieceSquare, blackKingSquare, true)).thenReturn(Some(Set(emptySquare)))
       when(blackPiece.pathFor(blackPieceSquare, emptySquare, false)).thenReturn(Some(Set.empty[Square]))
@@ -192,8 +198,8 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     }
     "not have a result when there's check that can be escaped by taking" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(whitePiece.pathFor(whitePieceSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(blackPiece.pathFor(blackPieceSquare, whitePieceSquare, true)).thenReturn(Some(Set.empty[Square]))
@@ -201,8 +207,8 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     }
     "have a checkmate result when there's check that can't be escaped" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.from).thenReturn(blackPawnStartSquare)
-      when(previousMock.to).thenReturn(blackPawnSquare)
+      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
+      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(whitePiece.pathFor(whitePieceSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       board.result shouldBe Some(Checkmate(Black))

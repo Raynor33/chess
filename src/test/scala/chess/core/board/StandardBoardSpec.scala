@@ -48,6 +48,12 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
   }
 
   "A StandardBoard" should {
+    "have the correct fromOption" in {
+      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).fromOption shouldBe Some(whitePieceSquare)
+    }
+    "have the correct toOption" in {
+      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).toOption shouldBe Some(blackPieceSquare)
+    }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = StandardBoard(whitePieceSquare, blackPieceSquare, previousMock)
       when(previousMock.hasNeverMoved(emptySquare)).thenReturn(false)

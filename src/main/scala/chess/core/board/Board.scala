@@ -8,5 +8,7 @@ trait Board {
   def result: Option[Result]
   def hasNeverMoved(square:Square) : Boolean
   def valid: Boolean
+  def fromOption: Option[Square]
+  def toOption: Option[Square]
 }
 

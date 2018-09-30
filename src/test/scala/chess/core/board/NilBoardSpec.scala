@@ -7,6 +7,12 @@ import org.scalatest.mock.MockitoSugar
 class NilBoardSpec extends WordSpec with Matchers with MockitoSugar {
 
   "The Nil Board" should {
+    "have None fromOption" in {
+      NilBoard.fromOption shouldBe None
+    }
+    "have None toOption" in {
+      NilBoard.toOption shouldBe None
+    }
     "have the correct positions for everything" in {
       val pieceMap = NilBoard.currentPositions
       pieceMap.size should be (32)

@@ -7,6 +7,10 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
   private val castleTo = if (to.x > from.x) Square(5, from.y) else Square(3, from.y)
   private val moveSignum = Integer.signum(to.x - from.x)
 
+  override def fromOption: Option[Square] = Some(from)
+
+  override def toOption: Option[Square] = Some(to)
+
   override def currentPositions = {
     val previousPositions = previousBoard.currentPositions
     (previousPositions

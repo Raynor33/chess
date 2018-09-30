@@ -57,6 +57,12 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
   }
 
   "A CastlingBoard" should {
+    "have the correct fromOption" in {
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).fromOption shouldBe Some(whiteKingSquare)
+    }
+    "have the correct toOption" in {
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toOption shouldBe Some(whiteKingsideKingSquare)
+    }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       when(previousMock.hasNeverMoved(emptySquare)).thenReturn(false)

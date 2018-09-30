@@ -3,6 +3,11 @@ package chess.core.board
 import chess.core.Square
 
 case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
+
+  override def fromOption: Option[Square] = Some(from)
+
+  override def toOption: Option[Square] = Some(to)
+
   override def currentPositions = {
     val previousPositions = previousBoard.currentPositions
     (previousPositions
@@ -22,4 +27,6 @@ case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends
         taking.colour != previousBoard.toMove)
     )
   }
+
+
 }

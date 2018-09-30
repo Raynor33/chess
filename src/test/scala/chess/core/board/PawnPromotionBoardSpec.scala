@@ -52,6 +52,12 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
   }
 
   "A PawnPromotionBoard" should {
+    "have the correct fromOption" in {
+      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).fromOption shouldBe Some(whitePawnSquare)
+    }
+    "have the correct toOption" in {
+      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).toOption shouldBe Some(backRowSquare)
+    }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
       when(previousMock.hasNeverMoved(whitePieceSquare)).thenReturn(false)

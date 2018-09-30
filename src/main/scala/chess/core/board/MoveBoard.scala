@@ -5,10 +5,6 @@ import chess.core.{Checkmate, Colour, Square}
 trait MoveBoard extends Board {
   def previousBoard: Board
 
-  def from: Square
-
-  def to: Square
-
   def moveLegal: Boolean
 
   protected def legalAndNotCheck = moveLegal &&
@@ -19,7 +15,7 @@ trait MoveBoard extends Board {
     previousBoard.result.isEmpty
 
   def hasNeverMoved(square: Square) =
-    previousBoard.hasNeverMoved(square) && square != from
+    previousBoard.hasNeverMoved(square) && !fromOption.contains(square)
 
   def toMove = previousBoard.toMove.opposite
 
