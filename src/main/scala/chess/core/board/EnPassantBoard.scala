@@ -4,12 +4,12 @@ import chess.core.{Pawn, Square}
 
 case class EnPassantBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
 
-  override def fromOption: Option[Square] = Some(from)
+  override def lastFrom: Option[Square] = Some(from)
 
-  override def toOption: Option[Square] = Some(to)
+  override def lastTo: Option[Square] = Some(to)
 
-  override def currentPositions = {
-    val previousPositions = previousBoard.currentPositions
+  override def positions = {
+    val previousPositions = previousBoard.positions
     (previousPositions
       ++ previousPositions.get(from).map(p =>
         Seq(to -> p)
@@ -19,8 +19,8 @@ case class EnPassantBoard(from: Square, to: Square, previousBoard: Board) extend
   }
 
   override def moveLegal = {
-    val previousPositions = previousBoard.currentPositions
-    (previousBoard.fromOption, previousBoard.toOption) match {
+    val previousPositions = previousBoard.positions
+    (previousBoard.lastFrom, previousBoard.lastTo) match {
       case (Some(previousFrom), Some(previousTo)) =>
         previousPositions.get(Square(to.x, from.y)).exists(_ match {
           case pawn: Pawn =>

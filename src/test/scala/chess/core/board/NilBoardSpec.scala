@@ -8,13 +8,13 @@ class NilBoardSpec extends WordSpec with Matchers with MockitoSugar {
 
   "The Nil Board" should {
     "have None fromOption" in {
-      NilBoard.fromOption shouldBe None
+      NilBoard.lastFrom shouldBe None
     }
     "have None toOption" in {
-      NilBoard.toOption shouldBe None
+      NilBoard.lastTo shouldBe None
     }
     "have the correct positions for everything" in {
-      val pieceMap = NilBoard.currentPositions
+      val pieceMap = NilBoard.positions
       pieceMap.size should be (32)
       pieceMap(Square(0,0)) should be (WhiteRook)
       pieceMap(Square(1,0)) should be (WhiteKnight)
@@ -39,7 +39,7 @@ class NilBoardSpec extends WordSpec with Matchers with MockitoSugar {
     }
     "say hasNeverMoved is true" in {
       Square.allSquares.foreach(
-        NilBoard.hasNeverMoved(_) should be (true)
+        NilBoard.neverMoved(_) should be (true)
       )
     }
     "say that it's white's move" in {

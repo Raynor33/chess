@@ -7,12 +7,12 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
   private val castleTo = if (to.x > from.x) Square(5, from.y) else Square(3, from.y)
   private val moveSignum = Integer.signum(to.x - from.x)
 
-  override def fromOption: Option[Square] = Some(from)
+  override def lastFrom: Option[Square] = Some(from)
 
-  override def toOption: Option[Square] = Some(to)
+  override def lastTo: Option[Square] = Some(to)
 
-  override def currentPositions = {
-    val previousPositions = previousBoard.currentPositions
+  override def positions = {
+    val previousPositions = previousBoard.positions
     (previousPositions
       ++ previousPositions.get(from).map(p =>
         Seq(to -> p)
@@ -23,9 +23,9 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
   }
 
   override def moveLegal = {
-    val previousPositions = previousBoard.currentPositions
-    previousBoard.hasNeverMoved(from) &&
-      previousBoard.hasNeverMoved(castleFrom) &&
+    val previousPositions = previousBoard.positions
+    previousBoard.neverMoved(from) &&
+      previousBoard.neverMoved(castleFrom) &&
       previousPositions.get(from).exists(p =>
         p.isKing && p.colour == previousBoard.toMove) &&
       Math.abs(to.x - from.x) == 2 &&
@@ -37,8 +37,8 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
   }
 
   private def fromOrThroughCheck = {
-    val allPositions = currentPositions
-    currentPositions.filter(_._2.colour == previousBoard.toMove.opposite)
+    val allPositions = positions
+    positions.filter(_._2.colour == previousBoard.toMove.opposite)
       .exists(t =>
         t._2.pathFor(t._1, from, true).exists(path =>
           allPositions.keySet.intersect(path).isEmpty

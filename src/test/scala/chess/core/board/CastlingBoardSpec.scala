@@ -49,34 +49,34 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     when(blackKing.pathFor(any(), any(), any())).thenReturn(None)
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
-    when(previousMock.currentPositions).thenReturn(previousPositions)
+    when(previousMock.positions).thenReturn(previousPositions)
     when(previousMock.toMove).thenReturn(White)
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
-    when(previousMock.hasNeverMoved(any())).thenReturn(true)
+    when(previousMock.neverMoved(any())).thenReturn(true)
   }
 
   "A CastlingBoard" should {
     "have the correct fromOption" in {
-      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).fromOption shouldBe Some(whiteKingSquare)
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).lastFrom shouldBe Some(whiteKingSquare)
     }
     "have the correct toOption" in {
-      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toOption shouldBe Some(whiteKingsideKingSquare)
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).lastTo shouldBe Some(whiteKingsideKingSquare)
     }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      when(previousMock.hasNeverMoved(emptySquare)).thenReturn(false)
-      board.hasNeverMoved(emptySquare) shouldBe false
+      when(previousMock.neverMoved(emptySquare)).thenReturn(false)
+      board.neverMoved(emptySquare) shouldBe false
     }
     "say hasNeverMoved is false if it equals from" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      when(previousMock.hasNeverMoved(whiteKingSquare)).thenReturn(true)
-      board.hasNeverMoved(whiteKingSquare) shouldBe false
+      when(previousMock.neverMoved(whiteKingSquare)).thenReturn(true)
+      board.neverMoved(whiteKingSquare) shouldBe false
     }
     "say hasNeverMoved is true if it doesn't equal from and previous value is true" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      when(previousMock.hasNeverMoved(emptySquare)).thenReturn(true)
-      board.hasNeverMoved(emptySquare) shouldBe true
+      when(previousMock.neverMoved(emptySquare)).thenReturn(true)
+      board.neverMoved(emptySquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
       when(previousMock.toMove).thenReturn(Black)
@@ -88,7 +88,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     }
     "update the currentPositions correctly kingside" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         whiteKingsideKingSquare -> whiteKing,
         whiteKingsideRookCastledSquare -> whiteKingsideRook,
         whiteQueensideRookInitialSquare -> whiteQueensideRook,
@@ -98,7 +98,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     }
     "update the currentPositions correctly queenside" in {
       val board = CastlingBoard(whiteKingSquare, whiteQueensideKingSquare, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         whiteQueensideKingSquare -> whiteKing,
         whiteQueensideRookCastledSquare -> whiteQueensideRook,
         whiteKingsideRookInitialSquare -> whiteKingsideRook,
@@ -107,7 +107,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       )
     }
     "not be valid if there is no piece at the from square" in {
-      when(previousMock.currentPositions).thenReturn(previousPositions - whiteKingSquare)
+      when(previousMock.positions).thenReturn(previousPositions - whiteKingSquare)
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe false
     }
@@ -132,17 +132,17 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       board.valid shouldBe false
     }
     "not be valid if path not clear" in {
-      when(previousMock.currentPositions).thenReturn(previousPositions + (whiteKingsideKingSquare -> blackPiece))
+      when(previousMock.positions).thenReturn(previousPositions + (whiteKingsideKingSquare -> blackPiece))
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if king has moved" in {
-      when(previousMock.hasNeverMoved(whiteKingSquare)).thenReturn(false)
+      when(previousMock.neverMoved(whiteKingSquare)).thenReturn(false)
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe false
     }
     "not be valid if rook has moved" in {
-      when(previousMock.hasNeverMoved(whiteKingsideRookInitialSquare)).thenReturn(false)
+      when(previousMock.neverMoved(whiteKingsideRookInitialSquare)).thenReturn(false)
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe false
     }

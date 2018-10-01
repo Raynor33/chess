@@ -4,12 +4,12 @@ import chess.core.Square
 
 case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends MoveBoard {
 
-  override def fromOption: Option[Square] = Some(from)
+  override def lastFrom: Option[Square] = Some(from)
 
-  override def toOption: Option[Square] = Some(to)
+  override def lastTo: Option[Square] = Some(to)
 
-  override def currentPositions = {
-    val previousPositions = previousBoard.currentPositions
+  override def positions = {
+    val previousPositions = previousBoard.positions
     (previousPositions
       - from
       ++ previousPositions.get(from).map(p =>
@@ -18,7 +18,7 @@ case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends
   }
 
   override def moveLegal = {
-    val previousPositions = previousBoard.currentPositions
+    val previousPositions = previousBoard.positions
     previousPositions.get(from).exists(piece =>
       piece.colour == previousBoard.toMove &&
       piece.pathFor(from, to, previousPositions.contains(to)).exists(path =>

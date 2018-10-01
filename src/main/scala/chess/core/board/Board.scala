@@ -3,12 +3,12 @@ package chess.core.board
 import chess.core._
 
 trait Board {
-  def currentPositions: Map[Square, Piece]
+  def positions: Map[Square, Piece]
   def toMove: Colour
   def result: Option[Result]
-  def hasNeverMoved(square:Square) : Boolean
+  def neverMoved(square:Square) : Boolean
   def valid: Boolean
-  def fromOption: Option[Square]
-  def toOption: Option[Square]
+  def lastFrom: Option[Square]
+  def lastTo: Option[Square]
 }
 

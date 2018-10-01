@@ -12,6 +12,6 @@ object DisplayGame {
       case Some(Checkmate(_)) => true
       case _ => false
     },
-    game.board.currentPositions.map(t => DisplaySquare(t._1, t._2)).toSet
+    game.board.positions.map(t => DisplaySquare(t._1, t._2)).toSet
   )
 }

@@ -45,7 +45,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
     when(blackKing.pathFor(any(), any(), any())).thenReturn(None)
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
-    when(previousMock.currentPositions).thenReturn(previousPositions)
+    when(previousMock.positions).thenReturn(previousPositions)
     when(previousMock.toMove).thenReturn(White)
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
@@ -53,25 +53,25 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
 
   "A PawnPromotionBoard" should {
     "have the correct fromOption" in {
-      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).fromOption shouldBe Some(whitePawnSquare)
+      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).lastFrom shouldBe Some(whitePawnSquare)
     }
     "have the correct toOption" in {
-      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).toOption shouldBe Some(backRowSquare)
+      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).lastTo shouldBe Some(backRowSquare)
     }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      when(previousMock.hasNeverMoved(whitePieceSquare)).thenReturn(false)
-      board.hasNeverMoved(whitePieceSquare) shouldBe false
+      when(previousMock.neverMoved(whitePieceSquare)).thenReturn(false)
+      board.neverMoved(whitePieceSquare) shouldBe false
     }
     "say hasNeverMoved is false if it equals from" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      when(previousMock.hasNeverMoved(whitePawnSquare)).thenReturn(true)
-      board.hasNeverMoved(whitePawnSquare) shouldBe false
+      when(previousMock.neverMoved(whitePawnSquare)).thenReturn(true)
+      board.neverMoved(whitePawnSquare) shouldBe false
     }
     "say hasNeverMoved is true if it doesn't equal from and previous value is true" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      when(previousMock.hasNeverMoved(whitePieceSquare)).thenReturn(true)
-      board.hasNeverMoved(whitePieceSquare) shouldBe true
+      when(previousMock.neverMoved(whitePieceSquare)).thenReturn(true)
+      board.neverMoved(whitePieceSquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
       when(previousMock.toMove).thenReturn(Black)
@@ -83,7 +83,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
     }
     "update the currentPositions correctly for a move into space" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         whitePieceSquare -> whitePiece,
         backRowSquare -> WhiteQueen,
         whiteKingSquare -> whiteKing,
@@ -93,7 +93,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
     }
     "update the currentPositions correctly for a move when taking" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowBlackPieceSquare, WhiteQueen, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         whitePieceSquare -> whitePiece,
         whiteKingSquare -> whiteKing,
         backRowBlackPieceSquare -> WhiteQueen,
@@ -102,18 +102,18 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
     }
     "not be valid if there is no piece at the from square" in {
       when(whitePawn.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.currentPositions).thenReturn(previousPositions - whitePawnSquare)
+      when(previousMock.positions).thenReturn(previousPositions - whitePawnSquare)
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the piece at from square is not toMove colour" in {
       when(blackPiece.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.currentPositions).thenReturn(previousPositions + (whitePawnSquare -> blackPiece))
+      when(previousMock.positions).thenReturn(previousPositions + (whitePawnSquare -> blackPiece))
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
       board.valid shouldBe false
     }
     "not be valid if the destination is blocked by a piece of the same colour" in {
-      when(previousMock.currentPositions).thenReturn(previousPositions + (backRowSquare -> whitePiece))
+      when(previousMock.positions).thenReturn(previousPositions + (backRowSquare -> whitePiece))
       when(whitePawn.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
       board.valid shouldBe false
@@ -124,7 +124,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
       board.valid shouldBe false
     }
     "not be valid if not a pawn" in {
-      when(previousMock.currentPositions).thenReturn(previousPositions + (whitePawnSquare -> whitePiece))
+      when(previousMock.positions).thenReturn(previousPositions + (whitePawnSquare -> whitePiece))
       when(whitePiece.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
       val board = PawnPromotionBoard(whitePieceSquare, backRowSquare, WhiteQueen, previousMock)
       board.valid shouldBe false

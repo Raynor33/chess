@@ -14,10 +14,10 @@ case object NilBoard extends Board {
     (Square(2,7) -> BlackBishop) + (Square(5,7) -> BlackBishop) +
     (Square(3,7) -> BlackQueen) + (Square(4,7) -> BlackKing)
 
-  override def fromOption: Option[Square] = None
-  override def toOption: Option[Square] = None
-  override def hasNeverMoved(square:Square) = true
-  override val currentPositions = pieces
+  override def lastFrom: Option[Square] = None
+  override def lastTo: Option[Square] = None
+  override def neverMoved(square:Square) = true
+  override val positions = pieces
   override val toMove = White
   override val result = None
   override val valid = true

@@ -41,7 +41,7 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     when(blackKing.pathFor(any(), any(), any())).thenReturn(None)
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
-    when(previousMock.currentPositions).thenReturn(previousPositions)
+    when(previousMock.positions).thenReturn(previousPositions)
     when(previousMock.toMove).thenReturn(White)
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
@@ -49,25 +49,25 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
 
   "A StandardBoard" should {
     "have the correct fromOption" in {
-      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).fromOption shouldBe Some(whitePieceSquare)
+      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).lastFrom shouldBe Some(whitePieceSquare)
     }
     "have the correct toOption" in {
-      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).toOption shouldBe Some(blackPieceSquare)
+      StandardBoard(whitePieceSquare, blackPieceSquare, previousMock).lastTo shouldBe Some(blackPieceSquare)
     }
     "say hasNeverMoved is false if previous hasNeverMoved is false" in {
       val board = StandardBoard(whitePieceSquare, blackPieceSquare, previousMock)
-      when(previousMock.hasNeverMoved(emptySquare)).thenReturn(false)
-      board.hasNeverMoved(emptySquare) shouldBe false
+      when(previousMock.neverMoved(emptySquare)).thenReturn(false)
+      board.neverMoved(emptySquare) shouldBe false
     }
     "say hasNeverMoved is false if it equals from" in {
       val board = StandardBoard(whitePieceSquare, blackPieceSquare, previousMock)
-      when(previousMock.hasNeverMoved(whitePieceSquare)).thenReturn(true)
-      board.hasNeverMoved(whitePieceSquare) shouldBe false
+      when(previousMock.neverMoved(whitePieceSquare)).thenReturn(true)
+      board.neverMoved(whitePieceSquare) shouldBe false
     }
     "say hasNeverMoved is true if it doesn't equal from and previous value is true" in {
       val board = StandardBoard(whitePieceSquare, blackPieceSquare, previousMock)
-      when(previousMock.hasNeverMoved(emptySquare)).thenReturn(true)
-      board.hasNeverMoved(emptySquare) shouldBe true
+      when(previousMock.neverMoved(emptySquare)).thenReturn(true)
+      board.neverMoved(emptySquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
       when(previousMock.toMove).thenReturn(Black)
@@ -79,7 +79,7 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     }
     "update the currentPositions correctly for a move into space" in {
       val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         emptySquare -> whitePiece,
         whiteKingSquare -> whiteKing,
         blackPieceSquare -> blackPiece,
@@ -88,7 +88,7 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     }
     "update the currentPositions correctly for a move when taking" in {
       val board = StandardBoard(whiteKingSquare, blackPieceSquare, previousMock)
-      board.currentPositions shouldBe Map(
+      board.positions shouldBe Map(
         whitePieceSquare -> whitePiece,
         blackPieceSquare -> whiteKing,
         blackKingSquare -> blackKing
