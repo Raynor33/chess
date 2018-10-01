@@ -8,7 +8,7 @@ case class EnPassantBoard(from: Square, to: Square, previousBoard: Board) extend
 
   override def lastTo: Option[Square] = Some(to)
 
-  override def positions = {
+  override lazy val positions = {
     val previousPositions = previousBoard.positions
     (previousPositions
       ++ previousPositions.get(from).map(p =>

@@ -8,7 +8,7 @@ case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends
 
   override def lastTo: Option[Square] = Some(to)
 
-  override def positions = {
+  override lazy val positions = {
     val previousPositions = previousBoard.positions
     (previousPositions
       - from
