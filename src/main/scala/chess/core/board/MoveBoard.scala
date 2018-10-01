@@ -10,9 +10,7 @@ trait MoveBoard extends Board {
   protected def legalAndNotCheck = moveLegal &&
     !check(previousBoard.toMove)
 
-  def valid = legalAndNotCheck &&
-    previousBoard.valid &&
-    previousBoard.result.isEmpty
+  def valid = legalAndNotCheck
 
   def hasNeverMoved(square: Square) =
     previousBoard.hasNeverMoved(square) && !fromOption.contains(square)

@@ -148,22 +148,6 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
-    "not be valid if the previous isn't valid" in {
-      when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
-      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
-      when(previousMock.valid).thenReturn(false)
-      val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
-      board.valid shouldBe false
-    }
-    "not be valid if the previous is complete" in {
-      when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
-      when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))
-      when(previousMock.toOption).thenReturn(Some(blackPawnSquare))
-      when(previousMock.result).thenReturn(Some(Checkmate(White)))
-      val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
-      board.valid shouldBe false
-    }
     "be valid if everything's fine" in {
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(previousMock.fromOption).thenReturn(Some(blackPawnStartSquare))

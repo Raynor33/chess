@@ -150,16 +150,6 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       val board = CastlingBoard(whiteKingSquare, whiteKingsideRookCastledSquare, previousMock)
       board.valid shouldBe false
     }
-    "not be valid if the previous isn't valid" in {
-      when(previousMock.valid).thenReturn(false)
-      val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      board.valid shouldBe false
-    }
-    "not be valid if the previous is complete" in {
-      when(previousMock.result).thenReturn(Some(Checkmate(White)))
-      val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
-      board.valid shouldBe false
-    }
     "be valid kingside" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe true

@@ -150,18 +150,6 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, BlackQueen, previousMock)
       board.valid shouldBe false
     }
-    "not be valid if the previous isn't valid" in {
-      when(whitePawn.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
-      val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      when(previousMock.valid).thenReturn(false)
-      board.valid shouldBe false
-    }
-    "not be valid if the previous is complete" in {
-      when(whitePawn.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
-      val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
-      when(previousMock.result).thenReturn(Some(Checkmate(White)))
-      board.valid shouldBe false
-    }
     "be valid when not taking and all ok" in {
       when(whitePawn.pathFor(whitePawnSquare, backRowSquare, false)).thenReturn(Some(Set.empty[Square]))
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)

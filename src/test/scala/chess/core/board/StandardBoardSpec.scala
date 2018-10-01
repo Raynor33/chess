@@ -129,18 +129,6 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
       board.valid shouldBe false
     }
-    "not be valid if the previous isn't valid" in {
-      when(previousMock.valid).thenReturn(false)
-      when(whitePiece.pathFor(whitePieceSquare, emptySquare, false)).thenReturn(Some(Set.empty[Square]))
-      val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
-      board.valid shouldBe false
-    }
-    "not be valid if the previous is complete" in {
-      when(previousMock.result).thenReturn(Some(Checkmate(White)))
-      when(whitePiece.pathFor(whitePieceSquare, emptySquare, false)).thenReturn(Some(Set.empty[Square]))
-      val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
-      board.valid shouldBe false
-    }
     "be valid if there is a clear path and the destination is empty" in {
       when(whitePiece.pathFor(whitePieceSquare, emptySquare, false)).thenReturn(Some(Set.empty[Square]))
       val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
