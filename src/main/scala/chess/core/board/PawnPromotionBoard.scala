@@ -16,6 +16,6 @@ case class PawnPromotionBoard(from: Square, to: Square, promotion: Piece, previo
   }) && (promotion match {
     case p: Pawn => false
     case k: King => false
-    case _ => promotion.colour == previousBoard.toMove
+    case _ => previousBoard.toMove.contains(promotion.colour)
   })
 }

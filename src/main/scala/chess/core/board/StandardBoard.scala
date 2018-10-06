@@ -20,11 +20,11 @@ case class StandardBoard(from: Square, to: Square, previousBoard: Board) extends
   override def moveLegal = {
     val previousPositions = previousBoard.positions
     previousPositions.get(from).exists(piece =>
-      piece.colour == previousBoard.toMove &&
+      previousBoard.toMove.contains(piece.colour) &&
       piece.pathFor(from, to, previousPositions.contains(to)).exists(path =>
         previousPositions.keySet.intersect(path).isEmpty) &&
       previousPositions.get(to).forall(taking =>
-        taking.colour != previousBoard.toMove)
+        !previousBoard.toMove.contains(taking.colour))
     )
   }
 

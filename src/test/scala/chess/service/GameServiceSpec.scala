@@ -49,7 +49,7 @@ class GameServiceSpec extends WordSpec with Matchers with OneInstancePerTest wit
       }
     }
     when(mockGameStore.getGame(gameId)).thenReturn(Future(Some(game)))
-    when(mockBoard.toMove).thenReturn(White)
+    when(mockBoard.toMove).thenReturn(Some(White))
     when(moveInstruction.applyTo(mockBoard)).thenReturn(mockBoard2)
     when(mockBoard2.valid).thenReturn(true)
     "allow a valid move" in new GameService(MockGameStore) {

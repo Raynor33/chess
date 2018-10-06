@@ -2,7 +2,7 @@ package chess.model
 
 import chess.core.{Checkmate, Colour, Game, Piece, Square}
 
-case class DisplayGame(id: String, whitePlayerId: String, blackPlayerId: String, toMove: Colour,
+case class DisplayGame(id: String, whitePlayerId: String, blackPlayerId: String, toMove: Option[Colour],
                        checkmate: Boolean, currentPositions: Set[DisplaySquare])
 
 object DisplayGame {

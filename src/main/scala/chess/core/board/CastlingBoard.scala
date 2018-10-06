@@ -27,7 +27,7 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
     previousBoard.neverMoved(from) &&
       previousBoard.neverMoved(castleFrom) &&
       previousPositions.get(from).exists(p =>
-        p.isKing && p.colour == previousBoard.toMove) &&
+        p.isKing && previousBoard.toMove.contains(p.colour)) &&
       Math.abs(to.x - from.x) == 2 &&
       to.y == from.y &&
       !fromOrThroughCheck &&
@@ -38,7 +38,7 @@ case class CastlingBoard(from: Square, to: Square, previousBoard: Board) extends
 
   private def fromOrThroughCheck = {
     val allPositions = positions
-    positions.filter(_._2.colour == previousBoard.toMove.opposite)
+    positions.filter(p => previousBoard.toMove.map(_.opposite).contains(p._2.colour))
       .exists(t =>
         t._2.pathFor(t._1, from, true).exists(path =>
           allPositions.keySet.intersect(path).isEmpty

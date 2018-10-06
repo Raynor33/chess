@@ -29,7 +29,7 @@ case class EnPassantBoard(from: Square, to: Square, previousBoard: Board) extend
           case _ => false
         }) &&
         previousPositions.get(from).exists(_ match {
-          case pawn: Pawn => pawn.colour == previousBoard.toMove &&
+          case pawn: Pawn => previousBoard.toMove.contains(pawn.colour) &&
             pawn.pathFor(from, to, true).isDefined
           case _ => false
         })

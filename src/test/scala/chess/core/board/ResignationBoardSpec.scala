@@ -11,6 +11,7 @@ class ResignationBoardSpec extends WordSpec with Matchers with MockitoSugar with
 
   before {
     reset(previousBoard)
+    when(previousBoard.toMove).thenReturn(Some(White))
   }
 
   "A ResignationBoard" should {
@@ -19,9 +20,8 @@ class ResignationBoardSpec extends WordSpec with Matchers with MockitoSugar with
       when(previousBoard.positions).thenReturn(previousPositions)
       ResignationBoard(White, previousBoard).positions shouldBe previousPositions
     }
-    "pass through the previous toMove" in {
-      when(previousBoard.toMove).thenReturn(White)
-      ResignationBoard(White, previousBoard).toMove shouldBe White
+    "have no toMove" in {
+      ResignationBoard(White, previousBoard).toMove shouldBe None
     }
     "pass through the previous neverMoved" in {
       val square = Square(0, 0)
@@ -35,14 +35,15 @@ class ResignationBoardSpec extends WordSpec with Matchers with MockitoSugar with
       ResignationBoard(White, previousBoard).lastTo shouldBe None
     }
     "be valid when toMove resigns" in {
-      when(previousBoard.toMove).thenReturn(White)
       ResignationBoard(White, previousBoard).valid shouldBe true
     }
     "be valid when not toMove resigns" in {
       ResignationBoard(Black, previousBoard).valid shouldBe true
     }
     "have a result" in {
-      ResignationBoard(White, previousBoard).result shouldBe Some(Resignation(White))
+      val board = ResignationBoard(White, previousBoard)
+      board.result shouldBe Some(Resignation(White))
+      board.toMove shouldBe None
     }
   }
 }

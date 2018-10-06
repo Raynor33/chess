@@ -4,7 +4,7 @@ import chess.core.{Colour, Piece, Resignation, Result, Square}
 case class ResignationBoard(colour: Colour, previous: Board) extends Board {
   override def positions: Map[Square, Piece] = previous.positions
 
-  override def toMove: Colour = previous.toMove
+  override def toMove: Option[Colour] = None
 
   override def result: Option[Result] = Some(Resignation(colour))
 

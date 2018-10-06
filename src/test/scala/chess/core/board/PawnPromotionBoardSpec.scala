@@ -46,7 +46,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
     when(previousMock.positions).thenReturn(previousPositions)
-    when(previousMock.toMove).thenReturn(White)
+    when(previousMock.toMove).thenReturn(Some(White))
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
   }
@@ -74,12 +74,12 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
       board.neverMoved(whitePieceSquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
-      when(previousMock.toMove).thenReturn(Black)
-      PawnPromotionBoard(backRowBlackPieceSquare, backRowSquare, BlackQueen, previousMock).toMove shouldBe White
+      when(previousMock.toMove).thenReturn(Some(Black))
+      PawnPromotionBoard(backRowBlackPieceSquare, backRowSquare, BlackQueen, previousMock).toMove shouldBe Some(White)
     }
     "say toMove is Black if previous game's toMove is White" in {
-      when(previousMock.toMove).thenReturn(White)
-      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).toMove shouldBe Black
+      when(previousMock.toMove).thenReturn(Some(White))
+      PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock).toMove shouldBe Some(Black)
     }
     "update the currentPositions correctly for a move into space" in {
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, WhiteQueen, previousMock)
@@ -191,6 +191,7 @@ class PawnPromotionBoardSpec extends WordSpec with Matchers with MockitoSugar wi
       val board = PawnPromotionBoard(whitePawnSquare, backRowSquare, whitePiece, previousMock)
       when(whitePiece.pathFor(backRowSquare, blackKingSquare, true)).thenReturn(Some(Set(emptySquare)))
       board.result shouldBe Some(Checkmate(Black))
+      board.toMove shouldBe None
     }
   }
 }

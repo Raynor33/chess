@@ -18,7 +18,7 @@ case object NilBoard extends Board {
   override def lastTo: Option[Square] = None
   override def neverMoved(square:Square) = true
   override val positions = pieces
-  override val toMove = White
+  override val toMove = Some(White)
   override val result = None
   override val valid = true
 }

@@ -42,7 +42,7 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
     when(previousMock.positions).thenReturn(previousPositions)
-    when(previousMock.toMove).thenReturn(White)
+    when(previousMock.toMove).thenReturn(Some(White))
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
   }
@@ -70,12 +70,12 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       board.neverMoved(emptySquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
-      when(previousMock.toMove).thenReturn(Black)
-      StandardBoard(blackPieceSquare, emptySquare, previousMock).toMove shouldBe White
+      when(previousMock.toMove).thenReturn(Some(Black))
+      StandardBoard(blackPieceSquare, emptySquare, previousMock).toMove shouldBe Some(White)
     }
     "say toMove is Black if previous game's toMove is White" in {
-      when(previousMock.toMove).thenReturn(White)
-      StandardBoard(whitePieceSquare, emptySquare, previousMock).toMove shouldBe Black
+      when(previousMock.toMove).thenReturn(Some(White))
+      StandardBoard(whitePieceSquare, emptySquare, previousMock).toMove shouldBe Some(Black)
     }
     "update the currentPositions correctly for a move into space" in {
       val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
@@ -177,6 +177,7 @@ class StandardBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       val board = StandardBoard(whitePieceSquare, emptySquare, previousMock)
       when(whitePiece.pathFor(emptySquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       board.result shouldBe Some(Checkmate(Black))
+      board.toMove shouldBe None
     }
   }
 }

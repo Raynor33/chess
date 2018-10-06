@@ -53,7 +53,7 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
     when(previousMock.positions).thenReturn(previousPositions)
-    when(previousMock.toMove).thenReturn(White)
+    when(previousMock.toMove).thenReturn(Some(White))
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
   }
@@ -81,12 +81,12 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
       board.neverMoved(emptySquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
-      when(previousMock.toMove).thenReturn(Black)
-      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).toMove shouldBe White
+      when(previousMock.toMove).thenReturn(Some(Black))
+      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).toMove shouldBe Some(White)
     }
     "say toMove is Black if previous game's toMove is White" in {
-      when(previousMock.toMove).thenReturn(White)
-      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).toMove shouldBe Black
+      when(previousMock.toMove).thenReturn(Some(White))
+      EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock).toMove shouldBe Some(Black)
     }
     "update the currentPositions correctly" in {
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
@@ -106,7 +106,7 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
       when(whitePawn.pathFor(whitePawnSquare, behindBlackPawnSquare, true)).thenReturn(Some(Set.empty[Square]))
       when(previousMock.lastFrom).thenReturn(Some(blackPawnStartSquare))
       when(previousMock.lastTo).thenReturn(Some(blackPawnSquare))
-      when(previousMock.toMove).thenReturn(Black)
+      when(previousMock.toMove).thenReturn(Some(Black))
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       board.valid shouldBe false
     }
@@ -196,6 +196,7 @@ class EnPassantBoardSpec extends WordSpec with Matchers with MockitoSugar with B
       val board = EnPassantBoard(whitePawnSquare, behindBlackPawnSquare, previousMock)
       when(whitePiece.pathFor(whitePieceSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       board.result shouldBe Some(Checkmate(Black))
+      board.toMove shouldBe None
     }
   }
 }

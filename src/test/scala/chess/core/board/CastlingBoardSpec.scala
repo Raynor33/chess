@@ -50,7 +50,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
     when(blackPiece.pathFor(any(), any(), any())).thenReturn(None)
 
     when(previousMock.positions).thenReturn(previousPositions)
-    when(previousMock.toMove).thenReturn(White)
+    when(previousMock.toMove).thenReturn(Some(White))
     when(previousMock.valid).thenReturn(true)
     when(previousMock.result).thenReturn(None)
     when(previousMock.neverMoved(any())).thenReturn(true)
@@ -79,12 +79,12 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       board.neverMoved(emptySquare) shouldBe true
     }
     "say toMove is White if previous game's toMove is Black" in {
-      when(previousMock.toMove).thenReturn(Black)
-      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toMove shouldBe White
+      when(previousMock.toMove).thenReturn(Some(Black))
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toMove shouldBe Some(White)
     }
     "say toMove is Black if previous game's toMove is White" in {
-      when(previousMock.toMove).thenReturn(White)
-      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toMove shouldBe Black
+      when(previousMock.toMove).thenReturn(Some(White))
+      CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock).toMove shouldBe Some(Black)
     }
     "update the currentPositions correctly kingside" in {
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
@@ -112,7 +112,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       board.valid shouldBe false
     }
     "not be valid if the piece at from square is not toMove colour" in {
-      when(previousMock.toMove).thenReturn(Black)
+      when(previousMock.toMove).thenReturn(Some(Black))
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.valid shouldBe false
     }
@@ -185,6 +185,7 @@ class CastlingBoardSpec extends WordSpec with Matchers with MockitoSugar with Be
       when(whiteKingsideRook.pathFor(whiteKingsideRookCastledSquare, blackKingSquare, true)).thenReturn(Some(Set.empty[Square]))
       val board = CastlingBoard(whiteKingSquare, whiteKingsideKingSquare, previousMock)
       board.result shouldBe Some(Checkmate(Black))
+      board.toMove shouldBe None
     }
   }
 }

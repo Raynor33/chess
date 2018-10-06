@@ -4,7 +4,7 @@ import chess.core._
 
 trait Board {
   def positions: Map[Square, Piece]
-  def toMove: Colour
+  def toMove: Option[Colour]
   def result: Option[Result]
   def neverMoved(square:Square) : Boolean
   def valid: Boolean

@@ -43,7 +43,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(4,1))
               + DisplaySquare(Square(4,2), WhitePawn),
-            toMove = Black
+            toMove = Some(Black)
           )
         ),
         TestGameStep(
@@ -52,7 +52,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(1,7))
               + DisplaySquare(Square(2,5), BlackKnight),
-            toMove = White
+            toMove = Some(White)
           )
         ),
         TestGameStep(
@@ -61,7 +61,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(5,0))
               + DisplaySquare(Square(2,3), WhiteBishop),
-            toMove = Black
+            toMove = Some(Black)
           )
         ),
         TestGameStep(
@@ -70,7 +70,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(0,6))
               + DisplaySquare(Square(0,4), BlackPawn),
-            toMove = White
+            toMove = Some(White)
           )
         ),
         TestGameStep(
@@ -79,7 +79,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(3,0))
               + DisplaySquare(Square(7,4), WhiteQueen),
-            toMove = Black
+            toMove = Some(Black)
           )
         ),
         TestGameStep(
@@ -88,7 +88,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(6,7))
               + DisplaySquare(Square(5,5), BlackKnight),
-            toMove = White
+            toMove = Some(White)
           )
         ),
         TestGameStep(
@@ -97,7 +97,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(7,4) || s.square == Square(5,6))
               + DisplaySquare(Square(5,6), WhiteQueen),
-            toMove = Black,
+            toMove = None,
             checkmate = true
           )
         )
@@ -132,7 +132,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
     id = id,
     whitePlayerId = whitePlayerId,
     blackPlayerId = blackPlayerId,
-    toMove = White,
+    toMove = Some(White),
     checkmate = false,
     currentPositions = Set(
       DisplaySquare(Square(0,0), WhiteRook),

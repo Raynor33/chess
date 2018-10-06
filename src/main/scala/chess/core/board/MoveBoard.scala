@@ -1,6 +1,6 @@
 package chess.core.board
 
-import chess.core.{Checkmate, Colour, Square}
+import chess.core.{Checkmate, Colour, Piece, Result, Square}
 
 trait MoveBoard extends Board {
   def previousBoard: Board
@@ -8,14 +8,14 @@ trait MoveBoard extends Board {
   def moveLegal: Boolean
 
   protected def legalAndNotCheck = moveLegal &&
-    !check(previousBoard.toMove)
+    !previousBoard.toMove.exists(check)
 
   def valid = legalAndNotCheck
 
   def neverMoved(square: Square) =
     previousBoard.neverMoved(square) && !lastFrom.contains(square)
 
-  def toMove = previousBoard.toMove.opposite
+  def toMove = if (result.isDefined) None else previousBoard.toMove.map(_.opposite)
 
   def check(colour: Colour) = {
     val allPositions = positions
@@ -30,13 +30,17 @@ trait MoveBoard extends Board {
       )
   }
 
-  def result = if (check(toMove) && {
+  def result = previousBoard.toMove.map(_.opposite).flatMap(nextMover => if (check(nextMover) && {
     val allPositions = positions
-    !allPositions.filter(_._2.colour == toMove).keys.exists(f =>
-      Square.allSquares.exists(t =>
-        StandardBoard(f, t, this).legalAndNotCheck ||
-        EnPassantBoard(f, t, this).legalAndNotCheck
-      )
-    )
-  }) Some(Checkmate(toMove)) else None
+    val boardData = BoardData(positions, Some(nextMover), None, neverMoved, true, lastFrom, lastTo)
+    !allPositions.filter(_._2.colour == nextMover).keys.exists(f =>
+    Square.allSquares.exists(t => StandardBoard(f, t, boardData).legalAndNotCheck ||
+          EnPassantBoard(f, t, boardData).legalAndNotCheck))
+  }) Some(Checkmate(nextMover)) else None)
+
+  private case class BoardData(positions: Map[Square, Piece], toMove: Option[Colour], result: Option[Result],
+    neverMovedDef: Square => Boolean, valid: Boolean, lastFrom: Option[Square], lastTo: Option[Square]) extends Board {
+    override def neverMoved(square: Square): Boolean = neverMovedDef(square)
+  }
+
 }
