@@ -2,10 +2,7 @@ package chess.service
 
 import javax.inject.Inject
 
-import chess.core._
-import chess.core.board.NilBoard
-import chess.model.{MoveInstruction, StartGameInstruction}
-import chess.store.GameStore
+import chess.domain._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

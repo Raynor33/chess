@@ -1,9 +1,6 @@
 package chess.service
 
-import chess.core.board.{Board, NilBoard}
-import chess.core.{Game, White}
-import chess.model.MoveInstruction
-import chess.store.GameStore
+import chess.domain.{Board, NilBoard, White}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar

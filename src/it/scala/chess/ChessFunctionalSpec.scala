@@ -1,7 +1,9 @@
 package chess
 
-import chess.core.{Black, BlackBishop, BlackKing, BlackKnight, BlackPawn, BlackQueen, BlackRook, Square, White, WhiteBishop, WhiteKing, WhiteKnight, WhitePawn, WhiteQueen, WhiteRook}
-import chess.model.{DisplayGame, DisplaySquare, MoveInstruction, StandardMoveInstruction, StartGameInstruction}
+import chess.domain.{Black, BlackBishop, BlackKing, BlackKnight, BlackPawn, BlackQueen, BlackRook, Square, WhiteBishop, WhiteKing, WhiteKnight, WhitePawn, WhiteQueen, WhiteRook}
+import chess.rest.data.{GameData, PositionData}
+import chess.domain._
+import chess.service.{MoveInstruction, StandardMoveInstruction, StartGameInstruction}
 import chess.utils.FreePortFixture
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
 import org.scalatest._
@@ -28,7 +30,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
 
   implicit val defaultPatience = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
-  private case class TestGameStep(instruction: MoveInstruction, expectedTransformation: DisplayGame => DisplayGame)
+  private case class TestGameStep(instruction: MoveInstruction, expectedTransformation: GameData => GameData)
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure("mongo.uri" -> List(s"localhost:$mongoPort"))
@@ -42,7 +44,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(4,1))
-              + DisplaySquare(Square(4,2), WhitePawn),
+              + PositionData(Square(4,2), WhitePawn),
             toMove = Some(Black)
           )
         ),
@@ -51,7 +53,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(1,7))
-              + DisplaySquare(Square(2,5), BlackKnight),
+              + PositionData(Square(2,5), BlackKnight),
             toMove = Some(White)
           )
         ),
@@ -60,7 +62,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(5,0))
-              + DisplaySquare(Square(2,3), WhiteBishop),
+              + PositionData(Square(2,3), WhiteBishop),
             toMove = Some(Black)
           )
         ),
@@ -69,7 +71,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(0,6))
-              + DisplaySquare(Square(0,4), BlackPawn),
+              + PositionData(Square(0,4), BlackPawn),
             toMove = Some(White)
           )
         ),
@@ -78,7 +80,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(3,0))
-              + DisplaySquare(Square(7,4), WhiteQueen),
+              + PositionData(Square(7,4), WhiteQueen),
             toMove = Some(Black)
           )
         ),
@@ -87,7 +89,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(6,7))
-              + DisplaySquare(Square(5,5), BlackKnight),
+              + PositionData(Square(5,5), BlackKnight),
             toMove = Some(White)
           )
         ),
@@ -96,7 +98,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
           prev => prev.copy(
             currentPositions = prev.currentPositions
               .filterNot(s => s.square == Square(7,4) || s.square == Square(5,6))
-              + DisplaySquare(Square(5,6), WhiteQueen),
+              + PositionData(Square(5,6), WhiteQueen),
             toMove = None,
             checkmate = true
           )
@@ -109,7 +111,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
     val wsClient = app.injector.instanceOf[WSClient]
     val startInstruction = StartGameInstruction("white", "black")
     val startResponse = await(wsClient.url(s"http://localhost:$port/games").post(
-      chess.model.startGameInstruction.writes(startInstruction)
+      chess.service.startGameInstruction.writes(startInstruction)
     ))
     val location = startResponse.header("Location").get
     steps.foldLeft(initialDisplayBoard(
@@ -118,55 +120,55 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
       startInstruction.blackPlayerId
     )) { (previous, step) =>
       val moveResponse = await(wsClient.url(s"http://localhost:$port$location/moves").post(
-        chess.model.moveInstructionFormats.writes(step.instruction))
+        chess.service.moveInstructionFormats.writes(step.instruction))
       )
       moveResponse.status mustBe 201
       val expected = step.expectedTransformation(previous)
       val getResponse = await(wsClient.url(s"http://localhost:$port$location").get())
-      chess.model.displayGame.reads(getResponse.json).get mustBe expected
+      chess.rest.data.gameData.reads(getResponse.json).get mustBe expected
       expected
     }
   }
 
-  private def initialDisplayBoard(id: String, whitePlayerId: String, blackPlayerId: String) = DisplayGame(
+  private def initialDisplayBoard(id: String, whitePlayerId: String, blackPlayerId: String) = GameData(
     id = id,
     whitePlayerId = whitePlayerId,
     blackPlayerId = blackPlayerId,
     toMove = Some(White),
     checkmate = false,
     currentPositions = Set(
-      DisplaySquare(Square(0,0), WhiteRook),
-      DisplaySquare(Square(1,0), WhiteKnight),
-      DisplaySquare(Square(2,0), WhiteBishop),
-      DisplaySquare(Square(3,0), WhiteQueen),
-      DisplaySquare(Square(4,0), WhiteKing),
-      DisplaySquare(Square(5,0), WhiteBishop),
-      DisplaySquare(Square(6,0), WhiteKnight),
-      DisplaySquare(Square(7,0), WhiteRook),
-      DisplaySquare(Square(0,1), WhitePawn),
-      DisplaySquare(Square(1,1), WhitePawn),
-      DisplaySquare(Square(2,1), WhitePawn),
-      DisplaySquare(Square(3,1), WhitePawn),
-      DisplaySquare(Square(4,1), WhitePawn),
-      DisplaySquare(Square(5,1), WhitePawn),
-      DisplaySquare(Square(6,1), WhitePawn),
-      DisplaySquare(Square(7,1), WhitePawn),
-      DisplaySquare(Square(0,7), BlackRook),
-      DisplaySquare(Square(1,7), BlackKnight),
-      DisplaySquare(Square(2,7), BlackBishop),
-      DisplaySquare(Square(3,7), BlackQueen),
-      DisplaySquare(Square(4,7), BlackKing),
-      DisplaySquare(Square(5,7), BlackBishop),
-      DisplaySquare(Square(6,7), BlackKnight),
-      DisplaySquare(Square(7,7), BlackRook),
-      DisplaySquare(Square(0,6), BlackPawn),
-      DisplaySquare(Square(1,6), BlackPawn),
-      DisplaySquare(Square(2,6), BlackPawn),
-      DisplaySquare(Square(3,6), BlackPawn),
-      DisplaySquare(Square(4,6), BlackPawn),
-      DisplaySquare(Square(5,6), BlackPawn),
-      DisplaySquare(Square(6,6), BlackPawn),
-      DisplaySquare(Square(7,6), BlackPawn)
+      PositionData(Square(0,0), WhiteRook),
+      PositionData(Square(1,0), WhiteKnight),
+      PositionData(Square(2,0), WhiteBishop),
+      PositionData(Square(3,0), WhiteQueen),
+      PositionData(Square(4,0), WhiteKing),
+      PositionData(Square(5,0), WhiteBishop),
+      PositionData(Square(6,0), WhiteKnight),
+      PositionData(Square(7,0), WhiteRook),
+      PositionData(Square(0,1), WhitePawn),
+      PositionData(Square(1,1), WhitePawn),
+      PositionData(Square(2,1), WhitePawn),
+      PositionData(Square(3,1), WhitePawn),
+      PositionData(Square(4,1), WhitePawn),
+      PositionData(Square(5,1), WhitePawn),
+      PositionData(Square(6,1), WhitePawn),
+      PositionData(Square(7,1), WhitePawn),
+      PositionData(Square(0,7), BlackRook),
+      PositionData(Square(1,7), BlackKnight),
+      PositionData(Square(2,7), BlackBishop),
+      PositionData(Square(3,7), BlackQueen),
+      PositionData(Square(4,7), BlackKing),
+      PositionData(Square(5,7), BlackBishop),
+      PositionData(Square(6,7), BlackKnight),
+      PositionData(Square(7,7), BlackRook),
+      PositionData(Square(0,6), BlackPawn),
+      PositionData(Square(1,6), BlackPawn),
+      PositionData(Square(2,6), BlackPawn),
+      PositionData(Square(3,6), BlackPawn),
+      PositionData(Square(4,6), BlackPawn),
+      PositionData(Square(5,6), BlackPawn),
+      PositionData(Square(6,6), BlackPawn),
+      PositionData(Square(7,6), BlackPawn)
     )
   )
 }
