@@ -2,7 +2,6 @@ package chess.persistence
 
 import javax.inject.{Inject, Singleton}
 
-import chess.domain._
 import chess.persistence.MongoGame._
 import chess.service._
 import play.api.Configuration

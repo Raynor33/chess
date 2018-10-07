@@ -2,7 +2,6 @@ package chess.rest.controllers
 
 import javax.inject.{Inject, Singleton}
 
-//import chess.domain.{Board, NilBoard}
 import chess.rest.data._
 import chess.service._
 import chess.service.{GameService, Missing, MoveInstruction, StartGameInstruction}

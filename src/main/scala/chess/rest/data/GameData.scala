@@ -1,7 +1,6 @@
 package chess.rest.data
 
-import chess.domain.Colour
-import chess.domain.{Checkmate, Piece, Square}
+import chess.domain.{Checkmate, Colour}
 import chess.service.Game
 
 case class GameData(id: String, whitePlayerId: String, blackPlayerId: String, toMove: Option[Colour],

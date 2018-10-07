@@ -1,14 +1,13 @@
 package chess.rest.controllers
 
-import chess.domain.Square
+import chess.domain.{NilBoard, Square}
 import chess.rest.data.{GameData, MoveData}
-import chess.domain.{NilBoard, _}
 import chess.service._
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers._
 import play.api.test._

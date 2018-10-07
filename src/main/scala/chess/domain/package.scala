@@ -1,6 +1,5 @@
 package chess
 
-import chess.service.Game
 import play.api.libs.json.{Json, _}
 
 package object domain {
