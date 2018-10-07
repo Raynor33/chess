@@ -14,7 +14,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import play.api.test.Helpers._
 
-class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSugar with ScalaFutures with OneServerPerSuite with MongoEmbedDatabase with BeforeAndAfterAll {
+class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSugar with ScalaFutures with OneServerPerSuite with MongoEmbedDatabase with BeforeAndAfterAll {
 
   private val mongoPort = freePort
 
@@ -26,7 +26,7 @@ class ChessIntegrationSpec extends PlaySpec with FreePortFixture with MockitoSug
 
   override def afterAll { mongoStop(mongoProps) }
 
-  implicit val defaultPatience = PatienceConfig(timeout = Span(1, Seconds), interval = Span(1, Millis))
+  implicit val defaultPatience = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
   private case class TestGameStep(instruction: MoveInstruction, expectedTransformation: DisplayGame => DisplayGame)
 

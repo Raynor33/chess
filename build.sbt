@@ -5,6 +5,10 @@ version := "1.0-SNAPSHOT"
 scalaVersion := "2.11.8"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
+  .configs(IntegrationTest)
+  .settings(
+      Defaults.itSettings
+  )
 
 libraryDependencies ++= Seq(
     jdbc,
@@ -14,9 +18,9 @@ libraryDependencies ++= Seq(
     "org.julienrf" % "play-json-derived-codecs_2.11" % "3.3",
     "org.reactivemongo" %% "play2-reactivemongo" % "0.12.3",
     "org.reactivemongo" %% "reactivemongo" % "0.12.3",
-    "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % Test,
-    "org.mockito" % "mockito-core" % "2.7.5" % Test,
-    "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % Test
+    "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "it, test",
+    "org.mockito" % "mockito-core" % "2.7.5" % "it, test",
+    "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4" % "it, test"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
