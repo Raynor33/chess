@@ -1,4 +1,4 @@
-package chess
+package chess.rest
 
 import chess.utils.FreePortFixture
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
