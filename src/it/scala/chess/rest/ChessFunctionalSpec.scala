@@ -57,7 +57,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
   }
 
   private def whenPost(path: String, body: JsObject)(assertions: WSResponse => Unit)(implicit wsClient: WSClient, host: String) = {
-    When(s"I POST to $path with body\n$body")
+    When(s"I POST to $path with body $body")
     val response = await(wsClient.url(s"$host$path").post(body))
     assertions(response)
   }
@@ -68,7 +68,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
   }
 
   private def thenResponseBody(expected: JsValue, ignoredKeys: Set[String] = Set.empty[String])(implicit response: WSResponse) = {
-    Then(s"the response body is\n$expected")
+    Then(s"the response body is $expected")
     (response.json match {
       case obj: JsObject => JsObject(obj.fields.filter(field => !ignoredKeys.contains(field._1)))
       case jsVal: JsValue => jsVal
