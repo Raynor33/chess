@@ -31,9 +31,9 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       when(gameService.startGame(instruction.whitePlayerId, instruction.blackPlayerId))
         .thenReturn(Future.successful(Success(id, game)))
       val result: Future[Result] = controller.start()(FakeRequest("POST", "/games").withBody(
-        Json.writes.writes(instruction))
+        Json.toJson(instruction))
       )
-      chess.rest.data.gameData.reads(Json.parse(contentAsString(result))).get mustBe GameData(id, game)
+      contentAsString(result) mustBe Json.toJson(GameData(id, game)).toString()
       header("Location", result) mustBe Some("/games/id")
       status(result) mustBe 201
       verify(gameService, times(1)).startGame(instruction.whitePlayerId, instruction.blackPlayerId)
@@ -44,9 +44,9 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       val game = Game("white", "black", instruction.applyTo(NilBoard))
       when(gameService.doMove(id, instruction)).thenReturn(Future.successful(Success(id, game)))
       val result: Future[Result] = controller.move(id)(FakeRequest("POST", "/games/" + id + "/moves").withBody(
-        chess.service.moveInstructionFormats.writes(instruction))
+        Json.toJson(instruction))
       )
-      chess.rest.data.moveData.reads(Json.parse(contentAsString(result))).get mustBe MoveData(id, instruction)
+      Json.fromJson[MoveData](Json.parse(contentAsString(result))) mustBe MoveData(id, instruction)
       header("Location", result) mustBe Some("/games/id/moves/0")
       status(result) mustBe 201
       verify(gameService, times(1)).doMove(id, instruction)
@@ -58,9 +58,9 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       val game = Game("white", "black", instruction1.applyTo(instruction.applyTo(NilBoard)))
       when(gameService.doMove(id, instruction1)).thenReturn(Future.successful(Success(id, game)))
       val result: Future[Result] = controller.move(id)(FakeRequest("POST", "/games/" + id + "/moves").withBody(
-        chess.service.moveInstructionFormats.writes(instruction1))
+        Json.toJson(instruction1))
       )
-      chess.rest.data.moveData.reads(Json.parse(contentAsString(result))).get mustBe MoveData(id, instruction1)
+      contentAsString(result) mustBe Json.toJson(MoveData(id, instruction1)).toString()
       header("Location", result) mustBe Some("/games/id/moves/1")
       status(result) mustBe 201
       verify(gameService, times(1)).doMove(id, instruction1)
@@ -71,7 +71,7 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       val game = Game("white", "black", NilBoard)
       when(gameService.doMove(id, instruction)).thenReturn(Future.successful(InvalidMove(id, game)))
       val result: Future[Result] = controller.move(id)(FakeRequest("POST", "/games/" + id + "/moves").withBody(
-        chess.service.moveInstructionFormats.writes(instruction))
+        Json.toJson(instruction))
       )
       status(result) mustBe 409
       verify(gameService, times(1)).doMove(id, instruction)
@@ -81,7 +81,7 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       val id = "id"
       when(gameService.doMove(id, instruction)).thenReturn(Future.successful(Missing))
       val result: Future[Result] = controller.move(id)(FakeRequest("POST", "/games/" + id + "/moves").withBody(
-        chess.service.moveInstructionFormats.writes(instruction))
+        Json.toJson(instruction))
       )
       status(result) mustBe 404
       verify(gameService, times(1)).doMove(id, instruction)
@@ -92,7 +92,7 @@ class ChessControllerSpec extends PlaySpec with Results with MockitoSugar with B
       when(gameService.getGame(id)).thenReturn(Future.successful(Some(game)))
       val result: Future[Result] = controller.get(id)(FakeRequest("GET", "/games/" + id))
       status(result) mustBe 200
-      chess.rest.data.gameData.reads(Json.parse(contentAsString(result))).get mustBe GameData(id, game)
+      contentAsString(result) mustBe Json.toJson(GameData(id, game)).toString()
       verify(gameService, times(1)).getGame(id)
     }
     "give a 404 response for a when missing on get" in {

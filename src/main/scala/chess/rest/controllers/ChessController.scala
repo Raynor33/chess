@@ -16,7 +16,7 @@ class ChessController @Inject() (gameService: GameService) extends Controller {
   def start = Action.async(parse.json) { request =>
     val instruction = request.body.as[StartGameInstruction]
     gameService.startGame(instruction.whitePlayerId, instruction.blackPlayerId).map({
-      case Success(id, game) => Created(Json.writes.writes(GameData(id, game)))
+      case Success(id, game) => Created(Json.toJson(GameData(id, game)))
         .withHeaders("Location" -> (request.path + "/" + id))
       case _ => InternalServerError
     })
@@ -30,7 +30,7 @@ class ChessController @Inject() (gameService: GameService) extends Controller {
 //      case NilBoard => -1
 //    }
     gameService.doMove(id, instruction).map {
-      case Success(_, game) => Created(Json.writes.writes(MoveData(id, instruction)))
+      case Success(_, game) => Created(Json.toJson(MoveData(id, instruction)))
 //        .withHeaders("Location" -> (request.path + "/" + moveIndex(game.board)))
       case InvalidMove(_, game) => Conflict("")
       case Missing => NotFound("")
@@ -39,7 +39,7 @@ class ChessController @Inject() (gameService: GameService) extends Controller {
 
   def get(id: String) = Action.async { request =>
     gameService.getGame(id).map(o =>
-      o.map(g => Ok(Json.writes.writes(GameData(id, g)))).getOrElse(NotFound(""))
+      o.map(g => Ok(Json.toJson(GameData(id, g)))).getOrElse(NotFound(""))
     )
   }
 }

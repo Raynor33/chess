@@ -9,7 +9,7 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsBoolean, JsObject, JsString, JsValue}
+import play.api.libs.json._
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.Helpers._
 
@@ -41,12 +41,28 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
       implicit val wsClient = app.injector.instanceOf[WSClient]
 
       var gameLocation: String = null
-      whenPost("/games", Data.startGameJson("white", "black")) { implicit response =>
+      whenPost("/games", Data.startGameJson("a", "b")) { implicit response =>
         thenResponseStatus(201)
-        thenResponseBody(expected = Data.initialGameJson("white", "black"), ignoredKeys = Set("id", "currentPositions"))
+        thenResponseBody(expected = Data.gameJson(
+          JsString("a"), JsString("b"), JsString("white"), JsNull, Data.initialPositions
+        ), ignoredKeys = Set("id"))
 
         gameLocation = response.header("Location").get
       }
+    }
+    "reject invalid moves" in {
+      Given("the server is running")
+      implicit val host = s"http://localhost:$port"
+      implicit val wsClient = app.injector.instanceOf[WSClient]
+
+      var gameLocation: String = null
+      whenPost("/games", Data.startGameJson("a", "b")) { implicit response =>
+        thenResponseStatus(200)
+        gameLocation = response.header("Location").get
+      }
+//      whenPost(gameLocation, Data.moveJson()) {
+//
+//      }
     }
   }
 
@@ -84,14 +100,48 @@ private object Data {
     ))
   }
 
-  def initialGameJson(whiteId: String, blackId: String) = {
-    JsObject(Map(
-      "whitePlayerId" -> JsString(whiteId),
-      "blackPlayerId" -> JsString(blackId),
-      "toMove" -> JsObject(Map(
-        "type" -> JsString("White")
-      )),
-      "checkmate" -> JsBoolean(false)
-    ))
+  val initialPositions = Json.obj(
+    "a1" -> "wR",
+    "b1" -> "wN",
+    "c1" -> "wB",
+    "d1" -> "wQ",
+    "e1" -> "wK",
+    "f1" -> "wB",
+    "g1" -> "wN",
+    "h1" -> "wR",
+    "a2" -> "wP",
+    "b2" -> "wP",
+    "c2" -> "wP",
+    "d2" -> "wP",
+    "e2" -> "wP",
+    "f2" -> "wP",
+    "g2" -> "wP",
+    "h2" -> "wP",
+    "a7" -> "bP",
+    "b7" -> "bP",
+    "c7" -> "bP",
+    "d7" -> "bP",
+    "e7" -> "bP",
+    "f7" -> "bP",
+    "g7" -> "bP",
+    "h7" -> "bP",
+    "a8" -> "bR",
+    "b8" -> "bN",
+    "c8" -> "bB",
+    "d8" -> "bQ",
+    "e8" -> "bK",
+    "f8" -> "bB",
+    "g8" -> "bN",
+    "h8" -> "bR"
+  )
+
+  def gameJson(whiteId: JsValue, blackId: JsValue, toMove: JsValue, result: JsValue, positions: JsValue) = {
+    Json.obj(
+      "whitePlayerId" -> whiteId,
+      "blackPlayerId" -> blackId,
+      "toMove" -> toMove,
+      "result" -> result,
+      "positions" -> positions
+    )
   }
 }

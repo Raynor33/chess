@@ -83,10 +83,10 @@ class PackageFormatsSpec extends WordSpec with Matchers {
         |}
       """.stripMargin)
     "enable a game to be serialised correctly" in {
-      Json.writes[Game].writes(testGame) shouldBe testGameJson
+      Json.toJson(testGame) shouldBe testGameJson
     }
-    "enable a gamse to be deserialised correctly" in {
-      Json.reads[Game].reads(testGameJson).get shouldBe testGame
+    "enable a game to be deserialised correctly" in {
+      Json.fromJson[Game](testGameJson) shouldBe JsSuccess(testGame)
     }
   }
 }
