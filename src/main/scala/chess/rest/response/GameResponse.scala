@@ -1,16 +1,16 @@
-package chess.rest.data
+package chess.rest.response
 
-import chess.domain.{Bishop, Black, BlackKing, Checkmate, Colour, King, Knight, Pawn, Piece, Queen, Result, Rook, Square, White}
+import chess.domain.{Bishop, Black, Checkmate, Colour, King, Knight, Pawn, Piece, Queen, Result, Rook, Square, White}
 import chess.service.Game
 import play.api.libs.json._
 
-case class GameData(id: String, whitePlayerId: String, blackPlayerId: String, toMove: Option[Colour],
-                    result: Option[Result], positions: Map[Square, Piece])
+case class GameResponse(id: String, whitePlayerId: String, blackPlayerId: String, toMove: Option[Colour],
+                        result: Option[Result], positions: Map[Square, Piece])
 
-object GameData {
+object GameResponse {
 
-  implicit val jsonWrites = new Writes[GameData] {
-    override def writes(game: GameData): JsValue = Json.obj(
+  implicit val jsonWrites = new Writes[GameResponse] {
+    override def writes(game: GameResponse): JsValue = Json.obj(
       "id" -> game.id,
       "whitePlayerId" -> game.whitePlayerId,
       "blackPlayerId" -> game.blackPlayerId,
@@ -46,7 +46,7 @@ object GameData {
     }))
   }
 
-  def apply(id: String, game: Game): GameData = new GameData(
+  def apply(id: String, game: Game): GameResponse = new GameResponse(
     id, game.whitePlayerId, game.blackPlayerId, game.board.toMove,
     game.board.result, game.board.positions)
 }

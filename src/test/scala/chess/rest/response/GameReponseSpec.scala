@@ -1,14 +1,15 @@
-package chess.rest.data
+package chess.rest.response
 
+import chess.domain.Board
 import chess.service.Game
 import org.scalatest.{Matchers, WordSpec}
-import play.api.libs.json.{JsNull, JsString, Json}
+import play.api.libs.json.{JsNull, Json}
 
-class GameDataSpec extends WordSpec with Matchers {
+class GameReponseSpec extends WordSpec with Matchers {
 
   "GameData" should {
     "be writable as json" in {
-      Json.toJson(GameData("id", Game("a", "b"))) shouldBe Json.obj(
+      Json.toJson(GameResponse("id", Game("a", "b", Board.setup))) shouldBe Json.obj(
         "id" -> "id",
         "whitePlayerId" -> "a",
         "blackPlayerId" -> "b",

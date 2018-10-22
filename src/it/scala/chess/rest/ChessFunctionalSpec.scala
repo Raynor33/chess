@@ -57,7 +57,7 @@ class ChessFunctionalSpec extends PlaySpec with FreePortFixture with MockitoSuga
 
       var gameLocation: String = null
       whenPost("/games", Data.startGameJson("a", "b")) { implicit response =>
-        thenResponseStatus(200)
+        thenResponseStatus(201)
         gameLocation = response.header("Location").get
       }
 //      whenPost(gameLocation, Data.moveJson()) {

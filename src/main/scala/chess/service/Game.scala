@@ -1,5 +1,5 @@
 package chess.service
 
-import chess.domain.{Board, NilBoard}
+import chess.domain.Board
 
-case class Game(whitePlayerId: String, blackPlayerId: String, board: Board = NilBoard)
+case class Game(whitePlayerId: String, blackPlayerId: String, board: Board)

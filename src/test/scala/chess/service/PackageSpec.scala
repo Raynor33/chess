@@ -4,7 +4,7 @@ import chess.domain.{CastlingBoard, EnPassantBoard, NilBoard, PawnPromotionBoard
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json._
 
-class PackageFormatsSpec extends WordSpec with Matchers {
+class PackageSpec extends WordSpec with Matchers {
 
   "Package formats" should {
     val testGame = Game(
